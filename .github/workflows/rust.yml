@@ -24,6 +24,10 @@ jobs:
       shell: bash
       env:
         CARGO_TERM_COLOR: always
+
+    - name: Set DATABASE_URL
+      run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+
         
     - name: Run tests
       run: cargo test --verbose
