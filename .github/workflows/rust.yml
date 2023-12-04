@@ -35,8 +35,5 @@ jobs:
     - name: Build
       run: cargo build --verbose
 
-    - name: Prepare SQLx
-      run: cargo sqlx prepare
-
     - name: Cargo Fix
       run: cargo fix --verbose --allow-dirty --workspace
