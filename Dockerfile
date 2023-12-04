@@ -5,7 +5,7 @@ FROM rust:latest
 WORKDIR /app
 
 # Copiez le fichier Cargo.toml et le fichier Cargo.lock pour permettre la mise en cache des dépendances
-COPY Cargo.toml Cargo.lock .env  ./
+COPY Cargo.toml .env  ./
 
 # Copiez tout le dossier src
 COPY src ./src
