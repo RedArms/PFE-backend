@@ -18,6 +18,9 @@ jobs:
     
     - name: Set DATABASE_URL
       run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-    
+      
+    - name: Create .env file
+      run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:pfe_back
