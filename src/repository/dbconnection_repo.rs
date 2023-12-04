@@ -20,11 +20,11 @@ impl ItemRepository {
         Ok(Self { pool })
     }
 
+    
     pub async fn get_item(&self, id: i32) -> Result<Option<Item>, Error> {
         let item = sqlx::query_as!(Item, "SELECT id, name FROM items WHERE id = $1", id)
             .fetch_optional(&self.pool)
             .await?;
-
         Ok(item)
     }
 
