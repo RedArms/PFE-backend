@@ -20,8 +20,11 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Display DATABASE_URL
-      run: echo $DATABASE_URL
-
+      run: echo ${{ secrets.DATABASE_URL }}
+      shell: bash
+      env:
+        CARGO_TERM_COLOR: always
+        
     - name: Run tests
       run: cargo test --verbose
 
