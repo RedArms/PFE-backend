@@ -3,7 +3,7 @@
 use actix_web::{get, HttpResponse, Result, web, error,Responder};
 
 
-use crate::{repository::dbconnection_repo::ItemRepository};
+use crate::repository::dbconnection_repo::ItemRepository;
 
 #[get("/")]
 async fn hello() -> impl Responder {
