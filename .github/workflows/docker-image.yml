@@ -12,6 +12,9 @@ jobs:
 
     runs-on: ubuntu-latest
     
+    env:
+      WEB_APP_NAME: snappies-backend-dev
+
     environment: all
     steps:
     - uses: actions/checkout@v3
@@ -24,3 +27,18 @@ jobs:
 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:pfe_back
+      
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Push Docker image to Azure Container Registry (ACR)
+      run: docker push $WEB_APP_NAME.azurecr.io/my-image-name:pfe_back
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-container-deploy@v1
+      with:
+        app-name: $WEB_APP_NAME
+        images: $WEB_APP_NAME.azurecr.io/my-image-name:pfe_back
+        multi-container-config-type: "compose"
