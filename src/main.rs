@@ -1,15 +1,16 @@
 mod api;
 mod models;
 mod repository;
+mod tests;
 
 use dotenv::dotenv;
-use sqlx::postgres::PgPoolOptions;
+
 use api::notes::{
     hello,
     get_item,
 };
-use repository::test_repo::ItemRepository;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use repository::dbconnection_repo::ItemRepository;
+use actix_web::{web, App, HttpServer};
 
 
 
