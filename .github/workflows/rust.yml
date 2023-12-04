@@ -1,4 +1,4 @@
-name: Rust CI
+name: Rust
 
 on:
   push:
@@ -13,30 +13,20 @@ env:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Set up Rust
-      uses: actions/setup-rust@v1  # Utilisez v1 au lieu de v2
-      with:
-        rust-version: 1.56.0
+    - name: Run tests
+      run: cargo test --verbose
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get install libpq-dev  # Installez les dépendances nécessaires pour SQLx avec PostgreSQL
-        cargo build --verbose
-        cargo test --verbose
+    - name: Build
+      run: cargo build --verbose
 
-    - name: Run SQLx migrations
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      run: |
-        cargo install sqlx-cli
-        sqlx migrate run
+    - name: Prepare SQLx
+      run: cargo sqlx prepare
 
-    - name: Run additional checks or tasks
-      run: |
-        # Ajoutez ici d'autres étapes nécessaires, comme la vérification du style de code, les linters, etc.
+    - name: Cargo Fix
+      run: cargo fix --verbose --allow-dirty --workspace
