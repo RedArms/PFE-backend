@@ -18,6 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Display DATABASE_URL
+      run: echo $DATABASE_URL
     - name: Run tests
       run: cargo test --verbose
     - name: Build
