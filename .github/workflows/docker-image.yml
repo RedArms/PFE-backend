@@ -23,6 +23,13 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag pfe_back:pfe_back_dev
 
+      - name: Azure Docker Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: pfebackend.azurecr.io
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
       - name: Check Azure CLI version
         run: az --version
 
@@ -34,11 +41,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Push Docker image to Azure Container Registry (ACR)
-        run: docker push pfebackend.azurecr.io/pfe_back:pfe_back_dev
-
       - name: Deploy to Azure Web App
         uses: Azure/webapps-deploy@v2
         with:
-          app-name: pfebackend
-          images: pfebackend.azurecr.io/pfe_back:pfe_back_dev
+          app-name: snappies-backend-dev
+          images: pfe_back:pfe_back_dev
