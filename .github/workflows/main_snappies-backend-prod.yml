@@ -12,7 +12,8 @@ on:
 jobs:
   build:
     runs-on: 'ubuntu-latest'
-
+    
+    environment: all
     steps:
     - uses: actions/checkout@v2
 
@@ -26,6 +27,8 @@ jobs:
         username: ${{ secrets.AzureAppService_ContainerUsername_9e13c6858f524b19af7f8dff49c576b7 }}
         password: ${{ secrets.AzureAppService_ContainerPassword_e08ed5c2a4684b98a99e4b01da7e9d6b }}
 
+    - name: Set DATABASE_URL
+      run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 
     - name: Create .env file
       run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
