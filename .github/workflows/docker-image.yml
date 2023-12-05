@@ -39,5 +39,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: pfe_back:pfe_back_dev
+          tags: redarmsii/pfe_back:pfe_back_dev
 
