@@ -29,6 +29,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,7 +49,7 @@ jobs:
       - name: Deploy to Azure App Service
         uses: Azure/webapps-deploy@v2
         with:
-          app-name: 'snappies-backend-dev'
-          images: 'docker.io/redarmsii/pfe_back:pfe_back_dev'
+          app-name: snappies-backend-dev
+          images: docker.io/redarmsii/pfe_back:pfe_back_dev
 
 
