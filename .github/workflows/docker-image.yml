@@ -13,6 +13,7 @@ jobs:
     env:
       WEB_APP_NAME: snappies-backend-dev
 
+    environment: all
     steps:
       - uses: actions/checkout@v3
 
