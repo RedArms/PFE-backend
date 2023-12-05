@@ -21,7 +21,7 @@ jobs:
         run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag pfe_back:pfe_back_dev
+        run: docker build . -t pfebackend.azurecr.io/pfe_back:pfe_back_dev
 
       - name: Azure Docker Login
         uses: azure/docker-login@v1
@@ -29,6 +29,9 @@ jobs:
           login-server: pfebackend.azurecr.io
           username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
           password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Push Docker image to Azure Container Registry (ACR)
+        run: docker push pfebackend.azurecr.io/pfe_back:pfe_back_dev
 
       - name: Check Azure CLI version
         run: az --version
