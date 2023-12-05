@@ -40,6 +40,8 @@ async fn main() -> std::io::Result<()> {
         .service(hello);
 
 
+        //App 
+
         App::new()
             .app_data(web::Data::new(item_repo.clone()))
             .service(item_route)
