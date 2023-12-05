@@ -10,9 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      WEB_APP_NAME: snappies-backend-dev
-
     environment: all
     steps:
       - uses: actions/checkout@v3
@@ -40,5 +37,5 @@ jobs:
       - name: Deploy to Azure Web App
         uses: Azure/webapps-deploy@v2
         with:
-          app-name: $WEB_APP_NAME
+          app-name: snappies-backend-dev
           images: pfe_back:pfe_back_dev
