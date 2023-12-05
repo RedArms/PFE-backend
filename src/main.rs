@@ -46,7 +46,7 @@ async fn main() -> std::io::Result<()> {
             .service(user_route)
             .service(index_route) //index in last because empty route path
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 80))?
     .run()
     .await
 }
