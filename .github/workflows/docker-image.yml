@@ -7,17 +7,42 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-    
+
     environment: all
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set DATABASE_URL
-      run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-    
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:pfe_back
+      - uses: actions/checkout@v3
+
+      - name: Set DATABASE_URL
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+
+      - name: Create .env file
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag pfe_back:pfe_back_dev
+
+      - name: Azure Docker Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: pfebackend.azurecr.io
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Check Azure CLI version
+        run: az --version
+
+      - name: Debug Azure Credentials
+        run: echo "${{ secrets.AZURE_CREDENTIALS }}"
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: Azure/webapps-deploy@v2
+        with:
+          app-name: snappies-backend-dev
+          images: pfe_back:pfe_back_dev
