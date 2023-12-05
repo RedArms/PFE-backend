@@ -2,4 +2,3 @@
 pub mod pgsqlConn;
 pub mod item;
 pub mod user;
-pub mod PgsqlConn;
