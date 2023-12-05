@@ -30,6 +30,9 @@ jobs:
           username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
           password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
 
+      - name: Push Docker image to Azure Container Registry (ACR)
+        run: docker push pfebackend.azurecr.io/pfe_back:pfe_back_dev
+
       - name: Check Azure CLI version
         run: az --version
 
