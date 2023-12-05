@@ -34,8 +34,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Push Docker image to Azure Container Registry (ACR)
+        run: docker push pfebackend.azurecr.io/pfe_back:pfe_back_dev
+
       - name: Deploy to Azure Web App
         uses: Azure/webapps-deploy@v2
         with:
-          app-name: snappies-backend-dev
-          images: pfe_back:pfe_back_dev
+          app-name: pfebackend
+          images: pfebackend.azurecr.io/pfe_back:pfe_back_dev
