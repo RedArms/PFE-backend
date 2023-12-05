@@ -3,17 +3,13 @@ mod models;
 mod tests;
 
 use dotenv::dotenv;
-use models::PgsqlConn::pgsql_conn;
+use models::pgsqlConn::pgsqlConn;
 use actix_web::{web, App, HttpServer};
 
 //Import func of each routes
-use routes::items::{
-    get_item
-};
+use routes::items::get_item;
 
-use routes::users::{
-    get_user
-};
+use routes::users::get_user;
 
 use routes::index::{
     hello, helloworld
@@ -26,7 +22,7 @@ async fn main() -> std::io::Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not set");
 
     // Create the repository
-    let item_repo = pgsql_conn::new(&database_url).await.expect("Failed to create ItemRepository");
+    let item_repo = pgsqlConn::new(&database_url).await.expect("Failed to create ItemRepository");
 
     // Start the Actix server
     HttpServer::new(move || {

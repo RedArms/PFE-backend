@@ -1,15 +1,15 @@
 // src/repository/item_repository.rs
-use serde::{Deserialize, Serialize};
+
 use sqlx::{postgres::PgPool, Error};
 
 use crate::models::item::Item;
 
 #[derive(Clone)]
-pub struct pgsql_conn {
+pub struct pgsqlConn {
     pool: PgPool,
 }
 
-impl pgsql_conn {
+impl pgsqlConn {
 
     pub async fn new(database_url: &str) -> Result<Self, Error> {
         let pool = PgPool::connect(database_url).await?;

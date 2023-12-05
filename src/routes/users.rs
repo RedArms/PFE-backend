@@ -1,9 +1,9 @@
-use actix_web::{get, HttpResponse, Result, web, error,Responder};
+use actix_web::{get, HttpResponse, Result, web, error};
 
-use crate::models::PgsqlConn::pgsql_conn;
+use crate::models::pgsqlConn::pgsqlConn;
 
 #[get("/{id}")]
-async fn get_user(path: web::Path<i32>,repo:web::Data<pgsql_conn>) ->  Result<HttpResponse,error::Error> { 
+async fn get_user(path: web::Path<i32>,repo:web::Data<pgsqlConn>) ->  Result<HttpResponse,error::Error> { 
     let id = path.into_inner();
  
     let item= repo.get_item(id as i32).await.unwrap();
