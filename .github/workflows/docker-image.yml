@@ -41,3 +41,10 @@ jobs:
           push: true
           tags: redarmsii/pfe_back:pfe_back_dev
 
+      - name: Deploy to Azure App Service
+        uses: Azure/webapps-deploy@v2
+        with:
+          app-name: 'snappies-backend-dev'
+          images: 'docker.io/redarmsii/pfe_back:pfe_back_dev'
+
+
