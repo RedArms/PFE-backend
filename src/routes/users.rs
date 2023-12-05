@@ -4,8 +4,6 @@ use crate::models::pgsqlConn::pgsqlConn;
 
 #[get("/{id}")]
 async fn get_user(path: web::Path<i32>,repo:web::Data<pgsqlConn>) ->  Result<HttpResponse,error::Error> { 
-
-    
     let id = path.into_inner();
  
     let item= repo.get_item(id as i32).await.unwrap();
