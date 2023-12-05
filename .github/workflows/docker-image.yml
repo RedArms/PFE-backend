@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    
 
 jobs:
   build:
@@ -21,31 +22,22 @@ jobs:
         run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
 
       - name: Build the Docker image
-        run: docker build . -t pfebackend.azurecr.io/pfe_back:pfe_back_dev
+        run: docker build . -t pfe_back:pfe_back_dev
 
-      - name: Azure Docker Login
-        uses: azure/docker-login@v1
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          login-server: pfebackend.azurecr.io
-          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push Docker image to Azure Container Registry (ACR)
-        run: docker push pfebackend.azurecr.io/pfe_back:pfe_back_dev
-
-      - name: Check Azure CLI version
-        run: az --version
-
-      - name: Debug Azure Credentials
-        run: echo "${{ secrets.AZURE_CREDENTIALS }}"
-
-      - name: Log in to Azure
-        uses: azure/login@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: redarmsii/pfe_back:pfe_back_dev
 
-      - name: Deploy to Azure Web App
-        uses: Azure/webapps-deploy@v2
-        with:
-          app-name: snappies-backend-dev
-          images: pfe_back:pfe_back_dev
