@@ -1,17 +1,9 @@
-
-
 use actix_web::{get, HttpResponse, Result, web, error,Responder};
 
+use crate::models::PgsqlConn::pgsql_conn;
 
-use crate::repository::dbconnection_repo::ItemRepository;
-
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[get("/item/{id}")]
-async fn get_item(path: web::Path<i32>,repo:web::Data<ItemRepository>) ->  Result<HttpResponse,error::Error> { 
+#[get("/{id}")]
+async fn get_user(path: web::Path<i32>,repo:web::Data<pgsql_conn>) ->  Result<HttpResponse,error::Error> { 
     let id = path.into_inner();
  
     let item= repo.get_item(id as i32).await.unwrap();
