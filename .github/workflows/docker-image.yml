@@ -26,7 +26,7 @@ jobs:
       run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:pfe_back
+      run: docker build . --file Dockerfile --tag pfe_back:pfe_back_dev
 
     - name: Check Azure CLI version
       run: az --version
@@ -40,11 +40,11 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Push Docker image to Azure Container Registry (ACR)
-      run: docker push $WEB_APP_NAME.azurecr.io/my-image-name:pfe_back
+      run: docker push pfe_back:pfe_back_dev
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-container-deploy@v1
       with:
         app-name: $WEB_APP_NAME
-        images: $WEB_APP_NAME.azurecr.io/my-image-name:pfe_back
+        images: pfe_back:pfe_back_dev
         multi-container-config-type: "compose"
