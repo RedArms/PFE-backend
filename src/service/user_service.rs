@@ -1,13 +1,13 @@
-use crate::{models::user::User, repository::userRepo::UserRepo};
+use crate::{models::user::User, repository::user_repository::UserRepository};
 use sqlx::Error;
 
 #[derive(Clone)]
 pub struct UserService {
-    user_repo: UserRepo,
+    user_repo: UserRepository,
 }
 
 impl UserService {
-    pub fn new(user_repo: UserRepo) -> Self {
+    pub fn new(user_repo: UserRepository) -> Self {
         Self { user_repo }
     }
 

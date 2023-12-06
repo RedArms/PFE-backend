@@ -5,12 +5,12 @@ use crate::models::item::Item;
 use crate::models::user::User;
 
 #[derive(Clone)]
-pub struct pgsqlConn {
+pub struct PgsqlConnection {
     pool: Option<Arc<Mutex<PgPool>>>,
     database_url: String,
 }
 
-impl pgsqlConn {
+impl PgsqlConnection {
     pub fn new(database_url: &str) -> Self {
         Self {
             pool: None,

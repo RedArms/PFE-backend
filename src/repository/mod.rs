@@ -1,3 +1,3 @@
-pub mod pgsqlConn;
-pub mod userRepo;
-pub mod itemRepo;
+pub mod pgsql_connection;
+pub mod user_repository;
+pub mod item_repository;
