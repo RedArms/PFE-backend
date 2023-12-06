@@ -13,6 +13,7 @@ use actix_web::web::get;
 // Import functions for each route
 use routes::items::get_item;
 use routes::users::get_user;
+use routes::auth::login_user;
 use routes::index::{hello, helloworld};
 use crate::models::user::User;
 use crate::repository::item_repository::ItemRepository;
@@ -62,13 +63,18 @@ async fn main() -> std::io::Result<()> {
             .service(helloworld)
             .service(hello);
 
+        let auth_route = actix_web::web::scope("/auth")
+            .service(login_user);
+
         App::new()
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone()))// Add ItemService to application data
             .service(item_route)
             .service(user_route)
+            .service(auth_route)
             .service(index_route)
+            
     })
     .bind(("127.0.0.1", 8080))?
     .run()

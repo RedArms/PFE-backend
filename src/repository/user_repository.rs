@@ -20,4 +20,12 @@ impl UserRepository {
 
         Ok(user)
     }
+
+    pub async fn get_user_by_email(&self, email: &str) -> Result<Option<User>, Error> {
+        let user = sqlx::query_as!(User, "SELECT * FROM pfe.users WHERE email = $1", email)
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
+
+        Ok(user)
+    }
 }
