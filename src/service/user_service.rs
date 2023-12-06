@@ -1,5 +1,8 @@
 use crate::{models::user::User, repository::user_repository::UserRepository};
 use sqlx::Error;
+extern crate bcrypt;
+use bcrypt::{hash, verify};
+const ROUND: u8 = 10; // Number of rounds to hash the password
 
 #[derive(Clone)]
 pub struct UserService {
@@ -15,34 +18,32 @@ impl UserService {
         self.user_repo.get_item(id).await
     }
 
-    pub async fn login(&self, email: &str, password: &str) -> Result<User, Error> {
+    pub async fn login(&self, email: &str, password: &str) -> Option<User> {
 
         let user_found = self.user_repo.get_user_by_email(email).await;
 
-        match user_found {
-            Ok(user) => {
-                match user {
-                    Some(user) => {
-                       // Bcrypt::verify(password, &user.password);
-                       
 
-
-
-                        
-
-
-                        if user.password == password {
-                            Ok(user)
-                        } else {
-                            Err(Error::RowNotFound)
-                        }
-                    }
-                    None => Err(Error::RowNotFound),
+        match user_found{
+            Ok(Some(user)) => {
+                // User found, check password
+                if verify(password, &user.password).unwrap() {
+                    Some(user) // Password correct
+                } else {
+                    // Password incorrect
+                    None
                 }
             }
-            Err(e) => Err(e),
-        }
+            Ok(None) => {
+                // User not found
+                None
+            }
+            Err(_) => {
+                // Error occurred
+                None
+            }
 
-    
+        }
+        
+
     }
 }
