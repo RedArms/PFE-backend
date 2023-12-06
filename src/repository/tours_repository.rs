@@ -1,7 +1,7 @@
 use crate::models::tours::Tours;
+use actix_web::web;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
-use actix_web::web;
 
 #[derive(Clone)]
 pub struct ToursRepository {
@@ -17,7 +17,7 @@ impl ToursRepository {
         let tours = sqlx::query_as!(Tours, "SELECT * FROM pfe.tours")
             .fetch_all(&self.app_state.db_pool)
             .await?;
-    
+
         Ok(tours)
     }
 }

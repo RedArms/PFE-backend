@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub user_id: i32,
     pub last_name: String,
@@ -14,10 +14,17 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(user_id: i32, last_name: &str,
-               first_name: &str, email: &str,
-               is_admin:bool, is_verified:bool,
-               phone:&str,password:&str,is_delivery_person:bool) -> Self {
+    pub fn new(
+        user_id: i32,
+        last_name: &str,
+        first_name: &str,
+        email: &str,
+        is_admin: bool,
+        is_verified: bool,
+        phone: &str,
+        password: &str,
+        is_delivery_person: bool,
+    ) -> Self {
         Self {
             user_id,
             last_name: last_name.to_string(),
@@ -29,13 +36,18 @@ impl User {
             password: password.to_string(),
             is_delivery_person,
         }
-
-        
     }
 
     pub fn to_string(&self) -> String {
-        format!("{} {} {} {} {} {} {}", self.user_id, self.last_name, self.first_name, self.email, self.is_admin, self.is_verified, self.phone)
+        format!(
+            "{} {} {} {} {} {} {}",
+            self.user_id,
+            self.last_name,
+            self.first_name,
+            self.email,
+            self.is_admin,
+            self.is_verified,
+            self.phone
+        )
     }
-
-
 }

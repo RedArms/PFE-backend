@@ -1,6 +1,6 @@
 use crate::models::tours::Tours;
-use sqlx::Error;
 use crate::repository::tours_repository::ToursRepository;
+use sqlx::Error;
 
 #[derive(Clone)]
 pub struct ToursService {

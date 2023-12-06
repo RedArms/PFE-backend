@@ -1,8 +1,6 @@
 use sqlx::{postgres::PgPool, Error};
 use std::sync::{Arc, Mutex};
 
-
-
 #[derive(Clone)]
 pub struct PgsqlConnection {
     pool: Option<Arc<Mutex<PgPool>>>,

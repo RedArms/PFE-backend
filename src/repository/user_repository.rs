@@ -1,7 +1,7 @@
 use crate::models::user::User;
+use actix_web::web;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
-use actix_web::web;
 
 #[derive(Clone)]
 pub struct UserRepository {
