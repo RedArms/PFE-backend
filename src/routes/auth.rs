@@ -8,6 +8,18 @@ struct LoginRequest {
     password: String,
 }
 
+/*
+    Login route
+    POST /login
+    JSON body: {
+        "email": "email",
+        "password": "password"
+    }
+
+    Return:
+        - 200 OK if login successful
+        - 401 Unauthorized if login failed
+*/
 #[post("/login")]
 async fn login_user(
     login_info: web::Json<LoginRequest>,
@@ -30,7 +42,21 @@ async fn login_user(
     }
 }
 
-// register login route given user models
+/*
+    Register route
+    POST /register
+    JSON body: {
+        "last_name": "last_name",
+        "first_name": "first_name",
+        "email": "email",
+        "phone": "phone",
+        "password": "password"
+    }
+
+    Return:
+        - 201 Created if user created
+        - 409 Conflict if user already exists (email already used)
+*/
 #[post("/register")]
 async fn register_user(
     user: web::Json<User>,
