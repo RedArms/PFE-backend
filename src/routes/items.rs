@@ -1,5 +1,5 @@
 use actix_web::{get, HttpResponse, Result, web, error, Responder};
-use crate::service::itemService::ItemService;
+use crate::service::item_service::ItemService;
 
 
 #[get("/{id}")]

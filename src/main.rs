@@ -15,10 +15,10 @@ use routes::items::get_item;
 use routes::users::get_user;
 use routes::index::{hello, helloworld};
 use crate::models::user::User;
-use crate::repository::itemRepo::ItemRepo;
-use crate::repository::userRepo::UserRepo;
-use crate::service::itemService::ItemService;
-use crate::service::userService::UserService;
+use crate::repository::item_repository::ItemRepository;
+use crate::repository::user_repository::UserRepository;
+use crate::service::item_service::ItemService;
+use crate::service::user_service::UserService;
 
 #[derive(Clone)]
 struct AppState {
@@ -46,9 +46,9 @@ async fn main() -> std::io::Result<()> {
     let app_state = AppState { db_pool: db_pool.clone() };
 
 
-    let item_repo = ItemRepo::new(web::Data::new(app_state.clone()));
+    let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
-    let user_repo = UserRepo::new(web::Data::new(app_state.clone()));
+    let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
     let user_service = UserService::new(user_repo);
 
     // Start the Actix server
