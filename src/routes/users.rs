@@ -1,5 +1,5 @@
 use actix_web::{get, HttpResponse, Result, web, error};
-use crate::service::userService::UserService;
+use crate::service::user_service::UserService;
 
 #[get("/{id}")]
 async fn get_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {

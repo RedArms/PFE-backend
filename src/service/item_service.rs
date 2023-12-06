@@ -1,14 +1,14 @@
 use crate::models::item::Item;
 use sqlx::Error;
-use crate::repository::itemRepo::ItemRepo;
+use crate::repository::item_repository::ItemRepository;
 
 #[derive(Clone)]
 pub struct ItemService {
-    item_repo: ItemRepo,
+    item_repo: ItemRepository,
 }
 
 impl ItemService {
-    pub fn new(item_repo: ItemRepo) -> Self {
+    pub fn new(item_repo: ItemRepository) -> Self {
         Self { item_repo }
     }
 
