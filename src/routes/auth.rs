@@ -64,8 +64,6 @@ async fn register_user(
 ) -> HttpResponse {
     let user = user.into_inner();
 
-    print!("On est dans le register ou quuoient laa ");
-
     let user_found = user_service.get_user_by_email(&user.email).await;
 
     // Check if user already exists
