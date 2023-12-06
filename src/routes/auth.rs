@@ -1,4 +1,4 @@
-use actix_web::{post, HttpResponse, Result, web, error};
+use actix_web::{post, HttpResponse, web};
 use serde::{Serialize, Deserialize};
 use crate::{service::user_service::UserService, models::user::User};
 
