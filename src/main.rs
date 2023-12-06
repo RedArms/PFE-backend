@@ -58,7 +58,7 @@ async fn main() -> std::io::Result<()> {
         let item_route = actix_web::web::scope("/items")
             .service(get_item);
         //index in last because empty route path
-        let index_route = actix_web::web::scope("/")
+        let index_route = actix_web::web::scope("")
             .service(helloworld)
             .service(hello);
 
