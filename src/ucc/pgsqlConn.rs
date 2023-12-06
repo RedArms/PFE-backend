@@ -3,6 +3,7 @@
 use sqlx::{postgres::PgPool, Error};
 
 use crate::models::item::Item;
+use crate::models::user::User;
 
 #[derive(Clone)]
 pub struct pgsqlConn {
@@ -21,6 +22,13 @@ impl pgsqlConn {
             .fetch_optional(&self.pool)
             .await?;
         Ok(item)
+    }
+
+    pub async fn get_user(&self, id: i32) -> Result<Option<User>, Error> {
+        let user = sqlx::query_as!(User,"SELECT \"id\" , \"last_name\" , \"first_name\" , email, \"is_admin\" , \"is_verified\" , telephone FROM users WHERE id = $1", id)
+            .fetch_optional(&self.pool)
+            .await?;
+        Ok(user)
     }
 
 }
