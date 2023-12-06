@@ -2,15 +2,17 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug,Serialize, Deserialize)]
 pub struct Item {
-    pub id: i32,
-    pub name: String,
+    pub item_id: i32,
+    pub label: String,
+    pub size : Option<String>,
 }
 
 impl Item {
-    pub fn new(id: i32, name: &str) -> Self {
+    pub fn new(item_id: i32, label: &str,size: Option<&str>) -> Self {
         Self {
-            id,
-            name: name.to_string(),
+            item_id,
+            label: label.to_string(),
+            size: size.map(|s| s.to_string()),
         }
     }
 }

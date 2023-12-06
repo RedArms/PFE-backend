@@ -1,16 +1,16 @@
-use actix_web::{get, HttpResponse, Result, web, error};
-use crate::repository::itemRepo;
+use actix_web::{get, HttpResponse, Result, web, error, Responder};
+use crate::service::itemService::ItemService;
+
 
 #[get("/{id}")]
-async fn get_item(path: web::Path<i32>) ->  Result<HttpResponse,error::Error> {
+async fn get_item(path: web::Path<i32>, item_service: web::Data<ItemService>) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
-    let item = itemRepo::get_item(id);
+    let item_result = item_service.get_item(id).await;
 
-
-    match item.await {
-        Some(item) => Ok(HttpResponse::Ok().json(item)),
-        // Directly match against the result of 'await'
-        None => Err(error::ErrorNotFound("Item not found"))
+    match item_result {
+        Ok(Some(item)) => Ok(HttpResponse::Ok().json(item)),
+        Ok(None) => Err(error::ErrorNotFound("Item not found")),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
