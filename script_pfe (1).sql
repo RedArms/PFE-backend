@@ -20,7 +20,7 @@ CREATE TABLE pfe.users (
 CREATE TABLE pfe.tours (
     tour_id SERIAL PRIMARY KEY,
     geo_zone VARCHAR(255) NOT NULL,
-    delivery_person INTEGER REFERENCES pfe.users(user_id)
+    delivery_person INTEGER REFERENCES pfe.users(user_id) NOT NULL
 );
 
 -- Clients
@@ -88,7 +88,7 @@ INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, 
 INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
 ('Paris', 2),
 ('Lyon', 3),
-('Marseille', NULL);
+('Marseille', 2);
 
 -- Insert data into 'clients'
 INSERT INTO pfe.clients (name, address, tour) VALUES

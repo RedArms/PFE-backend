@@ -6,19 +6,21 @@ mod repository;
 
 use dotenv::dotenv;
 use actix_web::{web, App, HttpServer};
+use repository::tours_repository::ToursRepository;
+use service::tours_repository::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
-use actix_web::web::get;
 
 // Import functions for each route
 use routes::items::get_item;
 use routes::users::get_user;
 use routes::index::{hello, helloworld};
-use crate::models::user::User;
+use routes::tours::get_all_tours;
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::user_repository::UserRepository;
 use crate::service::item_service::ItemService;
 use crate::service::user_service::UserService;
+
 
 #[derive(Clone)]
 struct AppState {
@@ -50,13 +52,17 @@ async fn main() -> std::io::Result<()> {
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
     let user_service = UserService::new(user_repo);
-
+    let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
+    let tours_service = ToursService::new(tours_repo);
     // Start the Actix server
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
             .service(get_user);
         let item_route = actix_web::web::scope("/items")
             .service(get_item);
+        let tours_route = actix_web::web::scope("/tours")
+        .service(get_all_tours);
+
         //index in last because empty route path
         let index_route = actix_web::web::scope("")
             .service(helloworld)
@@ -66,8 +72,10 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone()))// Add ItemService to application data
+            .app_data(web::Data::new(tours_service.clone()))// Add ItemService to application data
             .service(item_route)
             .service(user_route)
+            .service(tours_route)
             .service(index_route)
     })
     .bind(("127.0.0.1", 8080))?
