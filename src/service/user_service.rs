@@ -18,6 +18,10 @@ impl UserService {
         self.user_repo.get_item(id).await
     }
 
+    pub async fn get_user_by_email(&self, email: &str) -> Result<Option<User>, Error> {
+    
+        self.user_repo.get_user_by_email(email).await
+    }
     pub async fn login(&self, email: &str, password: &str) -> Option<User> {
 
         let user_found = self.user_repo.get_user_by_email(email).await;
@@ -45,5 +49,19 @@ impl UserService {
         }
         
 
+    }
+
+    pub async fn register(&self, user: User) -> Result<i32, Error> {
+        
+        let hashed_password = hash(&user.password, ROUND.into()).unwrap();
+        let user = User {
+            password: hashed_password,
+            ..user
+        };
+        match self.user_repo.create_user(user).await {
+            Ok(user_id) => Ok(user_id),
+            Err(_) => Err(Error::RowNotFound),
+            
+        }
     }
 }
