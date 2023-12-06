@@ -1,11 +1,11 @@
 use actix_web::{get, HttpResponse, Result, web, error};
-use crate::ucc::itemUCC;
+use crate::repository::itemRepo;
 
 #[get("/{id}")]
 async fn get_item(path: web::Path<i32>) ->  Result<HttpResponse,error::Error> {
     let id = path.into_inner();
 
-    let item = itemUCC::get_item(id);
+    let item = itemRepo::get_item(id);
 
 
     match item.await {

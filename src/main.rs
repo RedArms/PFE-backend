@@ -2,7 +2,7 @@ mod routes;
 mod models;
 mod tests;
 
-mod ucc;
+mod repository;
 
 use dotenv::dotenv;
 use actix_web::{web, App, HttpServer};
