@@ -18,4 +18,12 @@ impl UserService {
     pub async fn verify_user(&self, id: i32) -> Result<Option<User>, Error> {
         self.user_repo.verify_user(id).await
     }
+
+    pub async fn revoke_user(&self, id: i32) -> Result<Option<User>, Error> {
+        self.user_repo.revoke_user(id).await
+    }
+    
+    pub async fn set_admin(&self, id: i32) -> Result<Option<User>, Error> {
+        self.user_repo.set_admin(id).await
+    }
 }
