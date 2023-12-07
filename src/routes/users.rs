@@ -1,4 +1,4 @@
-use actix_web::{get, HttpResponse, Result, web, error};
+use actix_web::{get, put,HttpResponse, Result, web, error};
 use crate::service::user_service::UserService;
 
 #[get("/{id}")]
@@ -12,5 +12,15 @@ async fn get_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->
         Ok(None) => Err(error::ErrorNotFound("Item not found")),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
+}
 
+#[put("/{id}")]
+async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+    let id = path.into_inner();
+    let user = user_service.verify_user(id).await;
+    match user {
+        Ok(Some(user)) => Ok(HttpResponse::Ok().json(user)),
+        Ok(None) => Err(error::ErrorNotFound("Item not found")),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
 }
