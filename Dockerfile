@@ -12,6 +12,6 @@ COPY src ./src
 
 # Compilez l'application
 # Si votre application utilise un port, exposez-le
-EXPOSE 80
+EXPOSE 8080
 
 CMD [ "cargo","run" ]
