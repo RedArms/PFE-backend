@@ -14,4 +14,8 @@ impl UserService {
     pub async fn get_user(&self, id: i32) -> Result<Option<User>, Error> {
         self.user_repo.get_item(id).await
     }
+
+    pub async fn verify_user(&self, id: i32) -> Result<Option<User>, Error> {
+        self.user_repo.verify_user(id).await
+    }
 }
