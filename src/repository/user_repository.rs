@@ -1,5 +1,4 @@
 use crate::models::user::User;
-use sqlx::postgres::PgPool;
 use sqlx::Error;
 use actix_web::web;
 
@@ -23,6 +22,13 @@ impl UserRepository {
 
     pub async fn get_user_by_email(&self, email: &str) -> Result<Option<User>, Error> {
         let user = sqlx::query_as!(User, "SELECT * FROM pfe.users WHERE email = $1", email)
+        .fetch_optional(&self.app_state.db_pool)
+        .await?;
+
+    Ok(user)
+}
+    pub async fn verify_user(&self, id: i32) -> Result<Option<User>, Error> {
+        let user = sqlx::query_as!(User, "UPDATE pfe.users SET is_verified = true WHERE user_id = $1 RETURNING *", id)
             .fetch_optional(&self.app_state.db_pool)
             .await?;
 
@@ -46,4 +52,18 @@ impl UserRepository {
     
         Ok(user_id)
     }
+    pub async fn revoke_user(&self, id: i32) -> Result<Option<User>, Error> {
+        let user = sqlx::query_as!(User, "DELETE FROM pfe.users WHERE user_id = $1 RETURNING *", id)
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;   
+        Ok(user)
+    }
+    pub async fn set_admin(&self, id: i32) -> Result<Option<User>, Error> {
+        let user = sqlx::query_as!(User, "UPDATE pfe.users SET is_admin = true WHERE user_id = $1 RETURNING *", id)
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
+
+        Ok(user)
+    }
+    
 }

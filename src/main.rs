@@ -8,14 +8,13 @@ use dotenv::dotenv;
 use actix_web::{web, App, HttpServer};
 use sqlx::{postgres::PgPool, Error};
 use std::env;
-use actix_web::web::get;
 
 // Import functions for each route
 use routes::items::get_item;
-use routes::users::get_user;
+
 use routes::auth::{login_user, register_user};
+use routes::users::{get_user, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
-use crate::models::user::User;
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::user_repository::UserRepository;
 use crate::service::item_service::ItemService;
@@ -55,7 +54,10 @@ async fn main() -> std::io::Result<()> {
     // Start the Actix server
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
-            .service(get_user);
+            .service(get_user)
+            .service(verify_user)
+            .service(revoke_user)
+            .service(set_admin);
         let item_route = actix_web::web::scope("/items")
             .service(get_item);
         //index in last because empty route path

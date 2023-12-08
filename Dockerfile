@@ -10,8 +10,12 @@ COPY Cargo.toml .env  ./
 # Copiez tout le dossier src
 COPY src ./src
 
+#RUN echo "Démarrage de la construction de l'application..."
+#RUN cargo build --release
+
 # Compilez l'application
 # Si votre application utilise un port, exposez-le
-EXPOSE 80
+EXPOSE 8080
 
 CMD [ "cargo","run" ]
+
