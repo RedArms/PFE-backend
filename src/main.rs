@@ -15,7 +15,7 @@ use std::env;
 use routes::items::get_item;
 
 use routes::auth::{login_user, register_user};
-use routes::users::{get_user, verify_user, revoke_user, set_admin};
+use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
 use routes::tours::{get_all_tours, get_tours_today,get_tours_deliverer_day};
 
@@ -67,6 +67,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
             .service(get_user)
+            .service(get_all_users)
             .service(verify_user)
             .service(revoke_user)
             .service(set_admin);

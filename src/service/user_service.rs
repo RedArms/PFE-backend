@@ -64,6 +64,9 @@ impl UserService {
             
         }
     }
+    pub async fn get_all_users(&self) -> Result<Vec<User>, Error> {
+        self.user_repo.get_all_users().await
+    }
     pub async fn verify_user(&self, id: i32) -> Result<Option<User>, Error> {
         self.user_repo.verify_user(id).await
     }

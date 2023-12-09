@@ -17,6 +17,15 @@ async fn get_user(
     }
 }
 
+#[get("")]
+async fn get_all_users(user_service: web::Data<UserService>) -> Result<HttpResponse, error::Error> {
+    let users = user_service.get_all_users().await;
+    match users {
+        Ok(users) => Ok(HttpResponse::Ok().json(users)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
 #[post("/verify/{id}")]
 async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
     print!("verify user");

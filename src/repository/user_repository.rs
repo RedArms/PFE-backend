@@ -35,6 +35,14 @@ impl UserRepository {
         Ok(user)
     }
 
+    pub async fn get_all_users(&self) -> Result<Vec<User>, Error> {
+    let users = sqlx::query_as!(User, "SELECT * FROM pfe.users")
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
+    
+        Ok(users)
+    }
+    
     pub async fn create_user(&self, user: User) -> Result<i32, Error> {
         let result = sqlx::query!(
             "INSERT INTO pfe.users (email, password, first_name, last_name, phone) VALUES ($1, $2, $3, $4, $5) returning user_id",
@@ -53,7 +61,7 @@ impl UserRepository {
         Ok(user_id)
     }
     pub async fn revoke_user(&self, id: i32) -> Result<Option<User>, Error> {
-        let user = sqlx::query_as!(User, "DELETE FROM pfe.users WHERE user_id = $1 RETURNING *", id)
+        let user = sqlx::query_as!(User, "DELETE FROM pfe.users WHERE user_id = $1 RETURNING *;", id)
             .fetch_optional(&self.app_state.db_pool)
             .await?;   
         Ok(user)
