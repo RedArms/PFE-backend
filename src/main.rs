@@ -10,6 +10,7 @@ use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
+use actix_cors::Cors;
 
 // Import functions for each route
 use routes::items::get_item;
@@ -57,6 +58,12 @@ async fn main() -> std::io::Result<()> {
         db_pool: db_pool.clone(),
     };
 
+    // Print a message to show that the server has started successfully with time
+    println!(
+        "{} Server is running",
+        chrono::Local::now()
+    );
+
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
@@ -78,17 +85,22 @@ async fn main() -> std::io::Result<()> {
         let tour_route = actix_web::web::scope("/tours")
             .service(get_all_tours)
             .service(get_tours_today)
+
             .service(get_tours_deliverer_day)
             .service(set_deliverer);
         let boxe_route = actix_web::web::scope("/boxes").service(get_all_boxes);
+            .service(get_tours_deliverer_day);
         let auth_route = actix_web::web::scope("/auth")
-            .service(login_user)
-            .service(register_user);
+        .service(login_user)
+        .service(register_user);
 
         //index in last because empty route path
-        let index_route = actix_web::web::scope("").service(helloworld).service(hello);
+        let index_route = actix_web::web::scope("")
+            .service(helloworld)
+            .service(hello);
 
-        App::new()
+
+        App::new().wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone())) // Add ItemService to application data
@@ -102,7 +114,8 @@ async fn main() -> std::io::Result<()> {
             .service(boxe_route)
             .service(index_route)
     })
-    .bind(("0.0.0.0", 8080))?
+    //4125 idk why but 8080 dont work 
+    .bind(("0.0.0.0", 4125))?
     .run()
     .await
 }
