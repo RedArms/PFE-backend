@@ -1,6 +1,6 @@
 use crate::models::tours::Tours;
+use crate::models::tours_day::ToursDay;
 use actix_web::web;
-use sqlx::postgres::PgPool;
 use sqlx::Error;
 
 #[derive(Clone)]
@@ -19,5 +19,13 @@ impl ToursRepository {
             .await?;
 
         Ok(tours)
+    }
+
+    pub async fn get_tours_deliverer_day(&self, deliverer: i32) -> Result<Tours, Error> {
+        let tour = sqlx::query_as!(ToursDay, "SELECT * FROM pfe.tour_day WHERE tour_id = $1", tour_id)
+            .fetch_one(&self.app_state.db_pool)
+            .await?;
+
+        Ok(tour)
     }
 }
