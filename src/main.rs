@@ -55,6 +55,12 @@ async fn main() -> std::io::Result<()> {
         db_pool: db_pool.clone(),
     };
 
+    // Print a message to show that the server has started successfully with time
+    println!(
+        "{} Server is running",
+        chrono::Local::now()
+    );
+
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
@@ -76,14 +82,17 @@ async fn main() -> std::io::Result<()> {
             .service(get_all_tours)
             .service(get_tours_today)
             .service(get_tours_deliverer_day);
-        //index in last because empty route path
-        let index_route = actix_web::web::scope("").service(helloworld).service(hello);
 
         let auth_route = actix_web::web::scope("/auth")
-            .service(login_user)
-            .service(register_user);
+        .service(login_user)
+        .service(register_user);
 
-     
+
+        //index in last because empty route path
+        let index_route = actix_web::web::scope("")
+            .service(helloworld)
+            .service(hello);
+
 
         App::new()
             .app_data(web::Data::new(app_state.clone()))
