@@ -1,14 +1,14 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Item {
     pub item_id: i32,
     pub label: String,
-    pub size : Option<String>,
+    pub size: Option<String>,
 }
 
 impl Item {
-    pub fn new(item_id: i32, label: &str,size: Option<&str>) -> Self {
+    pub fn new(item_id: i32, label: &str, size: Option<&str>) -> Self {
         Self {
             item_id,
             label: label.to_string(),

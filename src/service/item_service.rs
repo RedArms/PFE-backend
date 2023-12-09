@@ -1,6 +1,6 @@
 use crate::models::item::Item;
-use sqlx::Error;
 use crate::repository::item_repository::ItemRepository;
+use sqlx::Error;
 
 #[derive(Clone)]
 pub struct ItemService {
