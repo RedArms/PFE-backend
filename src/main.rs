@@ -10,6 +10,7 @@ use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
+use actix_cors::Cors;
 
 // Import functions for each route
 use routes::items::get_item;
@@ -94,7 +95,7 @@ async fn main() -> std::io::Result<()> {
             .service(hello);
 
 
-        App::new()
+        App::new().wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone())) // Add ItemService to application data
@@ -107,7 +108,8 @@ async fn main() -> std::io::Result<()> {
             .service(index_route)
             
     })
-    .bind(("0.0.0.0", 8080))?
+    //4125 idk why but 8080 dont work 
+    .bind(("0.0.0.0", 4125))?
     .run()
     .await
 }
