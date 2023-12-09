@@ -64,6 +64,8 @@ async fn main() -> std::io::Result<()> {
         chrono::Local::now()
     );
 
+    println!("Nice one");
+
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
