@@ -1,0 +1,42 @@
+name: Prod merge
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment: all
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Prod DATABASE_URL_PROD
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
+
+      - name: Create Prod.env file
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" > .env
+
+      - name: Build the Docker image
+        run: docker build . -t pfe_back:pfe_back_prod
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: redarmsii/pfe_back:pfe_back_prod
