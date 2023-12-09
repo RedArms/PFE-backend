@@ -20,7 +20,7 @@ CREATE TABLE pfe.users (
 CREATE TABLE pfe.tours (
     tour_id SERIAL PRIMARY KEY,
     geo_zone VARCHAR(255) NOT NULL,
-    delivery_person INTEGER REFERENCES pfe.users(user_id)
+    delivery_person INTEGER REFERENCES pfe.users(user_id) NOT NULL
 );
 
 -- Clients
@@ -59,22 +59,22 @@ CREATE TYPE pfe.order_status AS ENUM ('recupere', 'lavage', 'attente livraison',
 
 CREATE TABLE pfe.orders (
     order_id SERIAL PRIMARY KEY,
-    client INTEGER REFERENCES pfe.clients(client_id),
-    status pfe.order_status,
-    tour INTEGER,
-    date DATE,
-    FOREIGN KEY (tour, date) REFERENCES pfe.tour_days(tour, date)
+    client INTEGER REFERENCES pfe.clients(client_id) NOT NULL,
+    status pfe.order_status NOT NULL,
+    tour INTEGER NOT NULL,
+    date DATE NOT NULL,
+    FOREIGN KEY (tour, date) REFERENCES pfe.tour_days(tour, date) 
 );
 
 -- Boxes
 CREATE TYPE pfe.box_status_type AS ENUM ('livre', 'non-livre');
 
 CREATE TABLE pfe.boxes (
-    order_id INTEGER REFERENCES pfe.orders(order_id),
-    item INTEGER REFERENCES pfe.items(item_id),
-    quantity INTEGER NOT NULL CHECK (quantity >= 0),
-    delivered_qty INTEGER DEFAULT 0 CHECK (quantity >= 0),
-    box_status pfe.box_status_type,
+    order_id INTEGER REFERENCES pfe.orders(order_id) NOT NULL,
+    item INTEGER REFERENCES pfe.items(item_id) NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity >= 0) DEFAULT 0,
+    delivered_qty INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    box_status pfe.box_status_type NOT NULL,
     PRIMARY KEY (order_id, item)
 );
 
@@ -88,7 +88,7 @@ INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, 
 INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
 ('Paris', 2),
 ('Lyon', 3),
-('Marseille', NULL);
+('Marseille', 2);
 
 -- Insert data into 'clients'
 INSERT INTO pfe.clients (name, address, tour) VALUES
@@ -115,15 +115,17 @@ INSERT INTO pfe.client_lines (client, item, quantity) VALUES
 
 -- Insert data into 'tour_days'
 INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
-(1, 2, '2023-12-01'),
-(2, 3, '2023-12-02'),
-(3, NULL, '2023-12-03');
+    (1, 2, '2023-12-09'),
+    (1, 2, '2023-12-10'),
+    (2, 3, '2023-12-09'),
+    (2, 3, '2023-12-02'),
+    (3, NULL, '2023-12-03');
 
 -- Insert data into 'orders'
 INSERT INTO pfe.orders (client, status, tour, date) VALUES
-(1, 'recupere', 1, '2023-12-01'),
-(2, 'lavage', 1, '2023-12-01'),
-(3, 'attente livraison', 2, '2023-12-02'),
+(1, 'recupere', 1, '2023-12-09'),
+(2, 'lavage', 1, '2023-12-10'),
+(3, 'attente livraison', 2, '2023-12-09'),
 (1, 'en cours de livraison', 2, '2023-12-02'),
 (2, 'livre', 3, '2023-12-03');
 

@@ -1,9 +1,11 @@
-use actix_web::{get, HttpResponse, Result, web, error, Responder};
 use crate::service::item_service::ItemService;
-
+use actix_web::{error, get, web, HttpResponse, Responder, Result};
 
 #[get("/{id}")]
-async fn get_item(path: web::Path<i32>, item_service: web::Data<ItemService>) -> Result<HttpResponse, error::Error> {
+async fn get_item(
+    path: web::Path<i32>,
+    item_service: web::Data<ItemService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
     let item_result = item_service.get_item(id).await;

@@ -1,8 +1,11 @@
-use actix_web::{get, delete, post, HttpResponse, Result, web, error};
 use crate::service::user_service::UserService;
+use actix_web::{delete, error, get, post, web, HttpResponse, Result};
 
 #[get("/{id}")]
-async fn get_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+async fn get_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     print!("on passe 1 ");
     let user = user_service.get_user(id).await;
@@ -14,8 +17,18 @@ async fn get_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->
     }
 }
 
+#[get("")]
+async fn get_all_users(user_service: web::Data<UserService>) -> Result<HttpResponse, error::Error> {
+    let users = user_service.get_all_users().await;
+    match users {
+        Ok(users) => Ok(HttpResponse::Ok().json(users)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
 #[post("/verify/{id}")]
 async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+    print!("verify user");
     let id = path.into_inner();
     let user = user_service.verify_user(id).await;
     match user {
@@ -25,8 +38,11 @@ async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>)
     }
 }
 
-#[delete("/revoke/{id}")]  
-async fn revoke_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+#[delete("/revoke/{id}")]
+async fn revoke_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.revoke_user(id).await;
     match user {
@@ -36,9 +52,11 @@ async fn revoke_user(path: web::Path<i32>, user_service: web::Data<UserService>)
     }
 }
 
-
 #[post("setadmin/{id}")]
-async fn set_admin(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+async fn set_admin(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.set_admin(id).await;
     match user {
