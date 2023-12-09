@@ -14,11 +14,11 @@ use actix_cors::Cors;
 
 // Import functions for each route
 use routes::items::get_item;
-
-use routes::auth::{login_user, register_user};
 use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
-use routes::tours::{get_all_tours, get_tours_today,get_tours_deliverer_day};
+use routes::tours::{get_all_tours, get_tours_today, get_tours_deliverer_day, set_deliverer};
+use routes::boxe::get_all_boxes;
+use routes::auth::{login_user, register_user};
 
 use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::item_repository::ItemRepository;
@@ -28,11 +28,6 @@ use crate::service::boxe_service::BoxeService;
 use crate::service::item_service::ItemService;
 use crate::service::order_service::OrderService;
 use crate::service::user_service::UserService;
-use routes::auth::{login_user, register_user};
-use routes::boxe::get_all_boxes;
-use routes::index::{hello, helloworld};
-use routes::tours::{get_all_tours, get_tours_deliverer_day, get_tours_today, set_deliverer};
-use routes::users::{get_user, revoke_user, set_admin, verify_user};
 
 #[derive(Clone)]
 struct AppState {
