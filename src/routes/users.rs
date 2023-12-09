@@ -1,5 +1,5 @@
-use actix_web::{get, delete, post, HttpResponse, Result, web, error};
 use crate::service::user_service::UserService;
+use actix_web::{delete, error, get, post, web, HttpResponse, Result};
 
 #[get("/{id}")]
 async fn get_user(
@@ -18,7 +18,10 @@ async fn get_user(
 }
 
 #[post("/verify/{id}")]
-async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+async fn verify_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.verify_user(id).await;
     match user {
@@ -28,8 +31,11 @@ async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>)
     }
 }
 
-#[delete("/revoke/{id}")]  
-async fn revoke_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+#[delete("/revoke/{id}")]
+async fn revoke_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.revoke_user(id).await;
     match user {
@@ -39,9 +45,11 @@ async fn revoke_user(path: web::Path<i32>, user_service: web::Data<UserService>)
     }
 }
 
-
 #[post("setadmin/{id}")]
-async fn set_admin(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
+async fn set_admin(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.set_admin(id).await;
     match user {

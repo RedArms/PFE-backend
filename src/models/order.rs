@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use sqlx_core::types::chrono::NaiveDate;
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Order {
     pub order_id: i32,
@@ -12,11 +11,17 @@ pub struct Order {
 }
 
 impl Order {
-    pub fn new(order_id: i32, client: i32, status: Option<&str>, tour: i32, date: NaiveDate) -> Self {
+    pub fn new(
+        order_id: i32,
+        client: i32,
+        status: Option<&str>,
+        tour: i32,
+        date: NaiveDate,
+    ) -> Self {
         Self {
             order_id,
             client,
-            status : status.map(|s| s.to_string()),
+            status: status.map(|s| s.to_string()),
             tour,
             date,
         }
