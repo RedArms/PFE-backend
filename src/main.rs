@@ -7,7 +7,7 @@ mod tests;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use repository::tours_repository::ToursRepository;
-use service::tours_repository::ToursService;
+use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
 
@@ -17,14 +17,14 @@ use routes::items::get_item;
 use routes::auth::{login_user, register_user};
 use routes::users::{get_user, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
+use routes::tours::{get_all_tours, get_tours_today,get_tours_deliverer_day};
+
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::user_repository::UserRepository;
+use crate::repository::order_repository::OrderRepository;
 use crate::service::item_service::ItemService;
 use crate::service::user_service::UserService;
-use routes::index::{hello, helloworld};
-use routes::items::get_item;
-use routes::tours::get_all_tours;
-use routes::users::get_user;
+use crate::service::order_service::OrderService;
 
 #[derive(Clone)]
 struct AppState {
@@ -61,6 +61,8 @@ async fn main() -> std::io::Result<()> {
     let user_service = UserService::new(user_repo);
     let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
     let tours_service = ToursService::new(tours_repo);
+    let order_repo = OrderRepository::new(web::Data::new(app_state.clone()));
+    let order_service = OrderService::new(order_repo);
     // Start the Actix server
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
@@ -70,6 +72,10 @@ async fn main() -> std::io::Result<()> {
             .service(set_admin);
         let item_route = actix_web::web::scope("/items")
             .service(get_item);
+        let tour_route = actix_web::web::scope("/tours")
+            .service(get_all_tours)
+            .service(get_tours_today)
+            .service(get_tours_deliverer_day);
         //index in last because empty route path
         let index_route = actix_web::web::scope("").service(helloworld).service(hello);
 
@@ -77,18 +83,18 @@ async fn main() -> std::io::Result<()> {
             .service(login_user)
             .service(register_user);
 
-        let auth_route = actix_web::web::scope("/auth")
-            .service(login_user)
-            .service(register_user);
+     
 
         App::new()
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone())) // Add ItemService to application data
+            .app_data(web::Data::new(order_service.clone()))
             .app_data(web::Data::new(tours_service.clone())) // Add ItemService to application data
             .service(item_route)
             .service(user_route)
             .service(auth_route)
+            .service(tour_route)
             .service(index_route)
             
     })

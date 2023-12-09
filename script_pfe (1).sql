@@ -59,11 +59,11 @@ CREATE TYPE pfe.order_status AS ENUM ('recupere', 'lavage', 'attente livraison',
 
 CREATE TABLE pfe.orders (
     order_id SERIAL PRIMARY KEY,
-    client INTEGER REFERENCES pfe.clients(client_id),
-    status pfe.order_status,
-    tour INTEGER,
-    date DATE,
-    FOREIGN KEY (tour, date) REFERENCES pfe.tour_days(tour, date)
+    client INTEGER REFERENCES pfe.clients(client_id) NOT NULL,
+    status pfe.order_status NOT NULL,
+    tour INTEGER NOT NULL,
+    date DATE NOT NULL,
+    FOREIGN KEY (tour, date) REFERENCES pfe.tour_days(tour, date) 
 );
 
 -- Boxes
@@ -115,15 +115,17 @@ INSERT INTO pfe.client_lines (client, item, quantity) VALUES
 
 -- Insert data into 'tour_days'
 INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
-(1, 2, '2023-12-01'),
-(2, 3, '2023-12-02'),
-(3, NULL, '2023-12-03');
+    (1, 2, '2023-12-09'),
+    (1, 2, '2023-12-10'),
+    (2, 3, '2023-12-09'),
+    (2, 3, '2023-12-02'),
+    (3, NULL, '2023-12-03');
 
 -- Insert data into 'orders'
 INSERT INTO pfe.orders (client, status, tour, date) VALUES
-(1, 'recupere', 1, '2023-12-01'),
-(2, 'lavage', 1, '2023-12-01'),
-(3, 'attente livraison', 2, '2023-12-02'),
+(1, 'recupere', 1, '2023-12-09'),
+(2, 'lavage', 1, '2023-12-10'),
+(3, 'attente livraison', 2, '2023-12-09'),
 (1, 'en cours de livraison', 2, '2023-12-02'),
 (2, 'livre', 3, '2023-12-03');
 

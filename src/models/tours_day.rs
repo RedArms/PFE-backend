@@ -1,20 +1,19 @@
 use serde::{Deserialize, Serialize};
+use sqlx_core::types::chrono::NaiveDate;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ToursDay {
-    pub tour_id: i32,
-    pub geo_zone: String,
-    pub delivery_person: i32,
-    pub jour: String,
+    pub tour: i32,
+    pub delivery_person: Option<i32>,
+    pub date: NaiveDate,
 }
 
 impl ToursDay {
-    pub fn new(tour_id: i32, geo_zone: &str, delivery_person: i32, jour: &str) -> Self {
+    pub fn new(tour: i32, delivery_person: Option<i32>, date: NaiveDate) -> Self {
         Self {
-            tour_id: tour_id,
-            geo_zone: geo_zone.to_string(),
+            tour: tour,
             delivery_person: delivery_person,
-            jour: jour.to_string(),
+            date: date,
         }
     }
 }

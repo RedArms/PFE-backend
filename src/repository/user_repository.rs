@@ -1,5 +1,6 @@
 use crate::models::user::User;
 use sqlx::Error;
+use actix_web::{web};
 
 #[derive(Clone)]
 pub struct UserRepository {

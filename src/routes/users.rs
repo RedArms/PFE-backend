@@ -1,6 +1,5 @@
 use actix_web::{get, delete, post, HttpResponse, Result, web, error};
 use crate::service::user_service::UserService;
-use actix_web::{error, get, web, HttpResponse, Result};
 
 #[get("/{id}")]
 async fn get_user(
