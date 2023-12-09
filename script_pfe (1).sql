@@ -70,11 +70,11 @@ CREATE TABLE pfe.orders (
 CREATE TYPE pfe.box_status_type AS ENUM ('livre', 'non-livre');
 
 CREATE TABLE pfe.boxes (
-    order_id INTEGER REFERENCES pfe.orders(order_id),
-    item INTEGER REFERENCES pfe.items(item_id),
-    quantity INTEGER NOT NULL CHECK (quantity >= 0),
-    delivered_qty INTEGER DEFAULT 0 CHECK (quantity >= 0),
-    box_status pfe.box_status_type,
+    order_id INTEGER REFERENCES pfe.orders(order_id) NOT NULL,
+    item INTEGER REFERENCES pfe.items(item_id) NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity >= 0) DEFAULT 0,
+    delivered_qty INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    box_status pfe.box_status_type NOT NULL,
     PRIMARY KEY (order_id, item)
 );
 

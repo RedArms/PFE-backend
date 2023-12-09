@@ -1,8 +1,8 @@
 use crate::models::order::Order;
-use sqlx_core::types::chrono::NaiveDate;
 use actix_web::web;
 use sqlx::postgres::PgPool;
 use sqlx::Error;
+use sqlx_core::types::chrono::NaiveDate;
 
 #[derive(Clone)]
 pub struct OrderRepository {

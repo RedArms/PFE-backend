@@ -26,19 +26,28 @@ impl User {
         is_delivery_person: bool,
     ) -> Self {
         Self {
-            user_id : Some(user_id),
+            user_id: Some(user_id),
             last_name: last_name.to_string(),
             first_name: first_name.to_string(),
             email: email.to_string(),
-            is_admin : Some(is_admin),
-            is_verified : Some(is_verified),
+            is_admin: Some(is_admin),
+            is_verified: Some(is_verified),
             phone: phone.to_string(),
             password: password.to_string(),
-            is_delivery_person : Some(is_delivery_person),
+            is_delivery_person: Some(is_delivery_person),
         }
     }
 
     pub fn to_string(&self) -> String {
-        format!("{:?} {} {} {} {:?} {:?} {}", self.user_id, self.last_name, self.first_name, self.email, self.is_admin, self.is_verified, self.phone)
+        format!(
+            "{:?} {} {} {} {:?} {:?} {}",
+            self.user_id,
+            self.last_name,
+            self.first_name,
+            self.email,
+            self.is_admin,
+            self.is_verified,
+            self.phone
+        )
     }
 }

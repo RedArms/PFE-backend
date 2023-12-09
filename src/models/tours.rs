@@ -4,9 +4,8 @@ use serde::{Deserialize, Serialize};
 pub struct Tours {
     pub tour_id: i32,
     pub geo_zone: String,
-    pub delivery_person:Option<i32>,
+    pub delivery_person: Option<i32>,
 }
-
 
 impl Tours {
     pub fn new(tour_id: i32, geo_zone: &str, delivery_person: Option<i32>) -> Self {
@@ -17,4 +16,3 @@ impl Tours {
         }
     }
 }
-

@@ -20,6 +20,16 @@ impl ToursService {
     pub async fn get_tours_today(&self) -> Result<Vec<ToursDay>, Error> {
         self.tours_repo.get_tours_today().await
     }
-    
 
+    pub async fn set_deliverer(
+        &self,
+        tour: i32,
+        date: String,
+        deliverer_id: i32,
+    ) -> Result<u64, Error> {
+        return self
+            .tours_repo
+            .set_deliverer(date, tour, deliverer_id)
+            .await;
+    }
 }
