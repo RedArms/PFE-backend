@@ -21,6 +21,4 @@ impl OrderService {
             .get_orders_from_date_and_tour(date, tour)
             .await
     }
-    
-
 }

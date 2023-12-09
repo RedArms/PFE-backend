@@ -10,6 +10,7 @@ use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
+use actix_cors::Cors;
 
 // Import functions for each route
 use routes::items::get_item;
@@ -19,12 +20,19 @@ use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin
 use routes::index::{hello, helloworld};
 use routes::tours::{get_all_tours, get_tours_today,get_tours_deliverer_day};
 
+use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::item_repository::ItemRepository;
-use crate::repository::user_repository::UserRepository;
 use crate::repository::order_repository::OrderRepository;
+use crate::repository::user_repository::UserRepository;
+use crate::service::boxe_service::BoxeService;
 use crate::service::item_service::ItemService;
-use crate::service::user_service::UserService;
 use crate::service::order_service::OrderService;
+use crate::service::user_service::UserService;
+use routes::auth::{login_user, register_user};
+use routes::boxe::get_all_boxes;
+use routes::index::{hello, helloworld};
+use routes::tours::{get_all_tours, get_tours_deliverer_day, get_tours_today, set_deliverer};
+use routes::users::{get_user, revoke_user, set_admin, verify_user};
 
 #[derive(Clone)]
 struct AppState {
@@ -55,6 +63,12 @@ async fn main() -> std::io::Result<()> {
         db_pool: db_pool.clone(),
     };
 
+    // Print a message to show that the server has started successfully with time
+    println!(
+        "{} Server is running",
+        chrono::Local::now()
+    );
+
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
@@ -63,6 +77,8 @@ async fn main() -> std::io::Result<()> {
     let tours_service = ToursService::new(tours_repo);
     let order_repo = OrderRepository::new(web::Data::new(app_state.clone()));
     let order_service = OrderService::new(order_repo);
+    let boxe_repo = BoxeRepository::new(web::Data::new(app_state.clone()));
+    let boxe_service = BoxeService::new(boxe_repo);
     // Start the Actix server
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
@@ -71,35 +87,42 @@ async fn main() -> std::io::Result<()> {
             .service(verify_user)
             .service(revoke_user)
             .service(set_admin);
-        let item_route = actix_web::web::scope("/items")
-            .service(get_item);
+        let item_route = actix_web::web::scope("/items").service(get_item);
         let tour_route = actix_web::web::scope("/tours")
             .service(get_all_tours)
             .service(get_tours_today)
+
+            .service(get_tours_deliverer_day)
+            .service(set_deliverer);
+        let boxe_route = actix_web::web::scope("/boxes")
+            .service(get_all_boxes)
             .service(get_tours_deliverer_day);
-        //index in last because empty route path
-        let index_route = actix_web::web::scope("").service(helloworld).service(hello);
-
         let auth_route = actix_web::web::scope("/auth")
-            .service(login_user)
-            .service(register_user);
+        .service(login_user)
+        .service(register_user);
 
-     
+        //index in last because empty route path
+        let index_route = actix_web::web::scope("")
+            .service(helloworld)
+            .service(hello);
 
-        App::new()
+
+        App::new().wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone())) // Add ItemService to application data
             .app_data(web::Data::new(order_service.clone()))
-            .app_data(web::Data::new(tours_service.clone())) // Add ItemService to application data
+            .app_data(web::Data::new(tours_service.clone()))
+            .app_data(web::Data::new(boxe_service.clone())) // Add ItemService to application data
             .service(item_route)
             .service(user_route)
             .service(auth_route)
             .service(tour_route)
+            .service(boxe_route)
             .service(index_route)
-            
     })
-    .bind(("0.0.0.0", 8080))?
+    //4125 idk why but 8080 dont work 
+    .bind(("0.0.0.0", 4125))?
     .run()
     .await
 }
