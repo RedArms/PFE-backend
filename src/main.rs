@@ -76,8 +76,6 @@ async fn main() -> std::io::Result<()> {
         port
     );
 
-    println!("print are the best debug tool");
-
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo.clone());
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
