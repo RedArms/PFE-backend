@@ -29,12 +29,7 @@ impl OrderRepository {
 
         Ok(orders)
     }
-    pub async fn get_order_id(
-        &self,
-        client: i32,
-        tour: i32,
-        date: String,
-    ) -> Result<i32, Error> {
+    pub async fn get_order_id(&self, client: i32, tour: i32, date: String) -> Result<i32, Error> {
         let date_parsed = chrono::NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let order = sqlx::query!(
             "SELECT order_id FROM pfe.orders WHERE client = $1 AND tour = $2 AND date = $3",
@@ -44,9 +39,7 @@ impl OrderRepository {
         )
         .fetch_optional(&self.app_state.db_pool)
         .await?;
-    
+
         Ok(order.map(|o| o.order_id).unwrap_or(0))
     }
-    
-    
 }

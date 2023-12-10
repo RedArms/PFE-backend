@@ -1,7 +1,7 @@
 use crate::service::{
+    client_service::ClientService,
     order_service::{self, OrderService},
     tours_service::ToursService,
-    client_service::ClientService,
 };
 use actix_web::{error, get, post, web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
@@ -30,7 +30,6 @@ async fn get_tour_by_id(
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
-
 
 #[get("/toursToday")]
 async fn get_tours_today(
@@ -89,7 +88,6 @@ async fn set_deliverer(
     }
 }
 
-
 #[get("/date/{date}")]
 async fn get_tours_by_delivery_day(
     path: web::Path<String>,
@@ -102,7 +100,6 @@ async fn get_tours_by_delivery_day(
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
-
 
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(

@@ -93,7 +93,7 @@ impl ToursRepository {
     pub async fn get_tours_by_delivery_day(&self, date: String) -> Result<Vec<ToursDay>, Error> {
         let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let tours = sqlx::query_as!(
-            ToursDay, 
+            ToursDay,
             "SELECT * FROM pfe.tour_days WHERE date = '2023-12-09' ",
         )
         .fetch_all(&self.app_state.db_pool)
