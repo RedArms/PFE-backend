@@ -15,8 +15,11 @@ jobs:
       - name: Set DATABASE_URL
         run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 
+      - name: Set PORT
+        run: echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
+
       - name: Create dev .env file
-        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        run: echo -e "DATABASE_URL=${{ secrets.DATABASE_URL }}\nPORT=${{ secrets.PORT }}" > .env
 
       - name: Build the Docker image
         run: docker build . -t pfe_back:pfe_back_dev
@@ -37,6 +40,9 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: redarmsii/pfe_back:pfe_back_dev
+          build-args: |
+            PORT=${{ secrets.PORT_PORT }}
+
 
       - name: Create Pull Request on main branch
         run: |

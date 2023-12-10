@@ -1,6 +1,8 @@
 # Utilisez une image officielle de Rust comme base
 FROM rust:latest
 
+ARG PORT
+
 # Créez un répertoire de travail dans l'image
 WORKDIR /app
 
@@ -13,9 +15,11 @@ COPY src ./src
 #RUN echo "Démarrage de la construction de l'application..."
 #RUN cargo build --release
 
+# for being observed 
+LABEL com.centurylinklabs.watchtower.enable="true"
 # Compilez l'application
 # Si votre application utilise un port, exposez-le
-EXPOSE 4125
+EXPOSE ${PORT}
 
 CMD [ "cargo","run" ]
 

@@ -18,11 +18,11 @@ jobs:
       - name: Set Prod DATABASE_URL_PROD
         run: echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
 
-      - name: Create Prod.env file
-        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" > .env
+      - name: Set Prod PORT
+        run: echo "PORT=${{ secrets.PORT_PROD }}" >> $GITHUB_ENV
 
-      - name: Build the Docker image
-        run: docker build . -t pfe_back:pfe_back_prod
+      - name: Create Prod .env file
+        run: echo -e "DATABASE_URL=${{ secrets.DATABASE_URL }}\nPORT=${{ secrets.PORT_PROD }}" > .env
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -40,3 +40,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: redarmsii/pfe_back:pfe_back_prod
+          build-args: |
+            PORT=${{ secrets.PORT_PROD }}
+    

@@ -3,10 +3,10 @@ name: Rust
 on:
   push:
     branches:
-      - main
+      - '*'
   pull_request:
     branches:
-      - main
+      - '*'
 
 env:
   CARGO_TERM_COLOR: always
@@ -19,16 +19,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Display DATABASE_URL
-      run: echo ${{ secrets.DATABASE_URL }}
-      shell: bash
-      env:
-        CARGO_TERM_COLOR: always
-
     - name: Set DATABASE_URL
       run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 
-        
+    - name: Set PORT
+      run: echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
+
     - name: Run tests
       run: cargo test --verbose
 
