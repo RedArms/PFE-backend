@@ -38,4 +38,8 @@ impl ToursService {
     ) -> Result<Vec<ToursDay>, Error> {
         return self.tours_repo.get_tours_day_avalaible().await;
     }
+
+    pub async fn get_by_id (&self, id: i32) -> Result<Option<Tours>, Error> {
+        return self.tours_repo.get_by_id(id).await;
+    }
 }

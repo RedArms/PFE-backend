@@ -22,3 +22,6 @@ Content-Type: application/json
 
 ###request 6
 GET http://localhost:4125/tours/getAllNotDelivered
+
+###request 7
+GET http://localhost:4125/tours/1

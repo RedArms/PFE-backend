@@ -16,6 +16,20 @@ async fn get_all_tours(
     }
 }
 
+#[get("/{id}")]
+async fn get_tour_by_id(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+    let tour = tours_service.get_by_id(id).await;
+    match tour {
+        Ok(None) => Err(error::ErrorNotFound("Tour not found")),
+        Ok(tour) => Ok(HttpResponse::Ok().json(tour)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
