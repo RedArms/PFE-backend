@@ -3,9 +3,12 @@ name: Merge to Dev and Main
 on:
   pull_request:
     branches: ["develop"]
+    types: [closed]
+    
 
 jobs:
   build:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
 
     environment: all
