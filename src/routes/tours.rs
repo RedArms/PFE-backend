@@ -89,6 +89,21 @@ async fn set_deliverer(
     }
 }
 
+
+#[get("/date/{date}")]
+async fn get_tours_by_delivery_day(
+    path: web::Path<String>,
+    tours_service: web::Data<ToursService>,
+) -> Result<HttpResponse, error::Error> {
+    let date = path.into_inner();
+    let tours = tours_service.get_tours_by_delivery_day(date).await;
+    match tours {
+        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
+
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(
     tour_service: web::Data<ToursService>,

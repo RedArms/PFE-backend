@@ -25,8 +25,10 @@ async fn get_all_users(user_service: web::Data<UserService>) -> Result<HttpRespo
 }
 
 #[post("/verify/{id}")]
-async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
-    print!("verify user");
+async fn verify_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.verify_user(id).await;
     match user {
