@@ -71,3 +71,14 @@ async fn set_deliverer(
         ))),
     }
 }
+
+#[get("/getAllNotDelivered")]
+async fn get_all_not_delivered(
+    tour_service: web::Data<ToursService>,
+) -> Result<HttpResponse, error::Error> {
+    let tours_day = tour_service.get_tours_day_avalaible().await;
+    match tours_day {
+        Ok(orders) => Ok(HttpResponse::Ok().json(orders)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}

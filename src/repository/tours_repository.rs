@@ -66,4 +66,18 @@ impl ToursRepository {
         println!("result: {:?}", result.rows_affected());
         Ok(result.rows_affected())
     }
+    pub async fn get_tours_day_avalaible(
+        &self
+        ) -> Result<Vec<ToursDay>, Error> {
+            let current_date: chrono::prelude::NaiveDate = chrono::Local::now().naive_local().date();
+            let tours = sqlx::query_as!(
+            ToursDay,
+            "SELECT * FROM pfe.tour_days WHERE date = $1 AND delivery_person IS NULL",
+            current_date,
+        )
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
+
+        Ok(tours)
+    }
 }

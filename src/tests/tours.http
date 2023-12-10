@@ -1,17 +1,17 @@
 
-http://127.0.0.1:8080/tours/toursToday
+http://127.0.0.1:4125/tours/toursToday
 
 ###requests 2 
-http://127.0.0.1:8080/tours/2/2023-12-09
+http://127.0.0.1:4125/tours/2/2023-12-09
 
 ###requests 3
-http://localhost:8080/boxes/allBoxes/1
+http://localhost:4125/boxes/allBoxes/1
 
 ###requests 4
-http://localhost:8080/items/1
+http://localhost:4125/items/1
 
 ###request 5
-POST http://localhost:8080/tours/setDeliverer
+POST http://localhost:4125/tours/setDeliverer
 Content-Type: application/json
 
 {
@@ -19,3 +19,6 @@ Content-Type: application/json
     "date": "2023-12-03",
     "delivery_person": 1
 }
+
+###request 6
+GET http://localhost:4125/tours/getAllNotDelivered
