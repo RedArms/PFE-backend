@@ -4,21 +4,24 @@ mod routes;
 mod service;
 mod tests;
 
+use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
 use std::env;
-use actix_cors::Cors;
 
 // Import functions for each route
-use routes::items::get_item;
-use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin};
-use routes::index::{hello, helloworld};
-use routes::tours::{get_all_tours, get_tours_today, get_tours_deliverer_day, set_deliverer};
-use routes::boxe::get_all_boxes;
 use routes::auth::{login_user, register_user};
+use routes::boxe::get_all_boxes;
+use routes::index::{hello, helloworld};
+use routes::items::get_item;
+use routes::tours::{
+    get_all_not_delivered, get_all_tours, get_tour_by_id, get_tours_by_delivery_day,
+    get_tours_deliverer_day, get_tours_today, set_deliverer,
+};
+use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
 
 use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::item_repository::ItemRepository;
@@ -53,7 +56,10 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to create database pool");
 
-    let port = env::var("PORT").expect("PORT not found in .env").parse().unwrap();
+    let port = env::var("PORT")
+        .expect("PORT not found in .env")
+        .parse()
+        .unwrap();
 
     // Create the AppState
     let app_state = AppState {
@@ -63,9 +69,10 @@ async fn main() -> std::io::Result<()> {
     // Print a message to show that the server has started successfully with time
     println!(
         "{} Server is running on port {}",
-        chrono::Local::now(),port
+        chrono::Local::now(),
+        port
     );
-    
+
     println!("print are the best debug tool");
 
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
@@ -88,27 +95,27 @@ async fn main() -> std::io::Result<()> {
             .service(set_admin);
         let item_route = actix_web::web::scope("/items").service(get_item);
         let tour_route = actix_web::web::scope("/tours")
+            .service(get_tours_by_delivery_day)
             .service(get_all_tours)
             .service(get_tours_today)
-
+            .service(get_all_not_delivered)
             .service(get_tours_deliverer_day)
-            .service(set_deliverer);
+            .service(set_deliverer)
+            .service(get_tour_by_id);
         let boxe_route = actix_web::web::scope("/boxes")
             .service(get_all_boxes)
             .service(get_tours_deliverer_day);
         let auth_route = actix_web::web::scope("/auth")
-        .service(login_user)
-        .service(register_user);
+            .service(login_user)
+            .service(register_user);
 
         //index in last because empty route path
-        let index_route = actix_web::web::scope("")
-            .service(helloworld)
-            .service(hello);
-
+        let index_route = actix_web::web::scope("").service(helloworld).service(hello);
 
         //test all the workflow
 
-        App::new().wrap(Cors::default().allow_any_origin().send_wildcard())
+        App::new()
+            .wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone())) // Add ItemService to application data
@@ -122,7 +129,7 @@ async fn main() -> std::io::Result<()> {
             .service(boxe_route)
             .service(index_route)
     })
-    //4125 idk why but 8080 dont work 
+    //4125 idk why but 8080 dont work
     .bind(("0.0.0.0", port))?
     .run()
     .await

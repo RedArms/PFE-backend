@@ -66,4 +66,39 @@ impl ToursRepository {
         println!("result: {:?}", result.rows_affected());
         Ok(result.rows_affected())
     }
+    pub async fn get_tours_day_avalaible(&self) -> Result<Vec<ToursDay>, Error> {
+        let current_date: chrono::prelude::NaiveDate = chrono::Local::now().naive_local().date();
+        let tours = sqlx::query_as!(
+            ToursDay,
+            "SELECT * FROM pfe.tour_days WHERE date = $1 AND delivery_person IS NULL",
+            current_date,
+        )
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
+
+        Ok(tours)
+    }
+
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Tours>, Error> {
+        let tour = sqlx::query_as!(Tours, "SELECT * FROM pfe.tours WHERE tour_id= $1", id)
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
+
+        println!("tour: {:?}", tour);
+        match tour {
+            Some(tour) => Ok(Some(tour)),
+            None => Ok(None),
+        }
+    }
+    pub async fn get_tours_by_delivery_day(&self, date: String) -> Result<Vec<ToursDay>, Error> {
+        let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
+        let tours = sqlx::query_as!(
+            ToursDay, 
+            "SELECT * FROM pfe.tour_days WHERE date = '2023-12-09' ",
+        )
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
+
+        Ok(tours)
+    }
 }

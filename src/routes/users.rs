@@ -7,9 +7,7 @@ async fn get_user(
     user_service: web::Data<UserService>,
 ) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
-    print!("on passe 1 ");
     let user = user_service.get_user(id).await;
-    print!("on passe 2");
     match user {
         Ok(Some(user)) => Ok(HttpResponse::Ok().json(user)),
         Ok(None) => Err(error::ErrorNotFound("Item not found")),
@@ -27,8 +25,10 @@ async fn get_all_users(user_service: web::Data<UserService>) -> Result<HttpRespo
 }
 
 #[post("/verify/{id}")]
-async fn verify_user(path: web::Path<i32>, user_service: web::Data<UserService>) ->  Result<HttpResponse,error::Error> {
-    print!("verify user");
+async fn verify_user(
+    path: web::Path<i32>,
+    user_service: web::Data<UserService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
     let user = user_service.verify_user(id).await;
     match user {
