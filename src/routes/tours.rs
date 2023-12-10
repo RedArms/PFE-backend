@@ -70,6 +70,7 @@ async fn set_deliverer(
     tours_service: web::Data<ToursService>,
     payload: web::Json<SetDelivererRequest>,
 ) -> Result<HttpResponse, error::Error> {
+    println!("testtest");
     match tours_service
         .set_deliverer(payload.tour, payload.date.clone(), payload.delivery_person)
         .await

@@ -55,7 +55,7 @@ impl ToursRepository {
     ) -> Result<u64, Error> {
         let current_date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let result = sqlx::query!(
-            "UPDATE pfe.tour_days SET delivery_person  = $1 WHERE tour = $2 AND date = $3 AND delivery_person IS NULL",
+            "UPDATE pfe.tour_days SET delivery_person  = $1 WHERE tour = $2 AND date = $3 ",
             deliverer_id,
             tour,
             current_date
