@@ -40,4 +40,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: redarmsii/pfe_back:pfe_back_dev
+          build-args: |
+            PORT=${{ secrets.PORT_PORT }}
 
