@@ -16,7 +16,7 @@ use actix_cors::Cors;
 use routes::items::get_item;
 use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
-use routes::tours::{get_all_tours,get_tour_by_id, get_tours_today, get_tours_deliverer_day, set_deliverer,get_all_not_delivered};
+use routes::tours::{get_all_tours,get_tour_by_id, get_tours_today, get_tours_deliverer_day, set_deliverer,get_all_not_delivered,get_all_client_by_tour};
 use routes::boxe::get_all_boxes;
 use routes::auth::{login_user, register_user};
 
@@ -24,10 +24,13 @@ use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::order_repository::OrderRepository;
 use crate::repository::user_repository::UserRepository;
+use crate::repository::client_repository::ClientRepository;
 use crate::service::boxe_service::BoxeService;
 use crate::service::item_service::ItemService;
 use crate::service::order_service::OrderService;
 use crate::service::user_service::UserService;
+use crate::service::client_service::ClientService;
+
 
 #[derive(Clone)]
 struct AppState {
@@ -69,15 +72,17 @@ async fn main() -> std::io::Result<()> {
     println!("print are the best debug tool");
 
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
-    let item_service = ItemService::new(item_repo);
+    let item_service = ItemService::new(item_repo.clone());
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
-    let user_service = UserService::new(user_repo);
+    let user_service = UserService::new(user_repo.clone());
     let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
-    let tours_service = ToursService::new(tours_repo);
+    let tours_service = ToursService::new(tours_repo.clone());
     let order_repo = OrderRepository::new(web::Data::new(app_state.clone()));
-    let order_service = OrderService::new(order_repo);
+    let order_service = OrderService::new(order_repo.clone());
     let boxe_repo = BoxeRepository::new(web::Data::new(app_state.clone()));
-    let boxe_service = BoxeService::new(boxe_repo);
+    let boxe_service = BoxeService::new(boxe_repo.clone());
+    let client_repo = ClientRepository::new(web::Data::new(app_state.clone()));
+    let client_service = ClientService::new(client_repo.clone(),boxe_repo.clone(),order_repo.clone());
     // Start the Actix server
     HttpServer::new(move || {
         let user_route = actix_web::web::scope("/users")
@@ -93,8 +98,9 @@ async fn main() -> std::io::Result<()> {
             .service(get_all_not_delivered)
             .service(get_tours_deliverer_day)
             .service(set_deliverer)
-            .service(get_tour_by_id);
-        let boxe_route = actix_web::web::scope("/boxes")
+            .service(get_tour_by_id)
+            .service(get_all_client_by_tour);
+            let boxe_route = actix_web::web::scope("/boxes")
             .service(get_all_boxes)
             .service(get_tours_deliverer_day);
         let auth_route = actix_web::web::scope("/auth")
@@ -116,6 +122,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(order_service.clone()))
             .app_data(web::Data::new(tours_service.clone()))
             .app_data(web::Data::new(boxe_service.clone())) // Add ItemService to application data
+            .app_data(web::Data::new(client_service.clone()))
             .service(item_route)
             .service(user_route)
             .service(auth_route)

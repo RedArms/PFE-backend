@@ -18,17 +18,17 @@ impl ClientService {
         Self { client_repo,boxe_repo,order_repo }
     }
 
-    pub async fn get_all_clients_tours(&self, id: i32) -> Result<Vec<Client>, Error> {
+    pub async fn get_all_client_by_tour(&self, id: i32) -> Result<Vec<Client>, Error> {
         self.client_repo.get_all_clients_tours(id).await
     }
 
-    pub async fn get_all_boxes(&self, id: i32, tour_day: i32, date: String) -> Result<Vec<Boxe>, Error> {
+    pub async fn get_all_boxes_client(&self, id: i32, tour_day: i32, date: String) -> Result<Vec<Boxe>, Error> {
         let id_order = self.order_repo.get_order_id(id, tour_day, date).await?;
         println!("id_order : {}",id_order);
         if(id_order == 0){
             return Ok(Vec::new());
         }
-        self.boxe_repo.get_all_boxes_for_client(id_order).await
+        self.boxe_repo.get_all_boxes(id_order).await
     }
 
 }

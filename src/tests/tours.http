@@ -25,3 +25,6 @@ GET http://localhost:4125/tours/getAllNotDelivered
 
 ###request 7
 GET http://localhost:4125/tours/1
+
+###request 8
+GET http://localhost:4125/tours/getTours/1/getAllClient

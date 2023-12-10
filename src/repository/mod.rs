@@ -4,3 +4,4 @@ pub mod pgsql_connection;
 pub mod tours_repository;
 pub mod user_repository;
 pub mod boxe_repository;
+pub mod client_repository;
