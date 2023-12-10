@@ -65,7 +65,8 @@ async fn main() -> std::io::Result<()> {
         "{} Server is running on port {}",
         chrono::Local::now(),port
     );
-
+    
+    println!("print are the best debug tool");
 
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
@@ -104,6 +105,8 @@ async fn main() -> std::io::Result<()> {
             .service(helloworld)
             .service(hello);
 
+
+        //test all the workflow
 
         App::new().wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
