@@ -53,6 +53,8 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to create database pool");
 
+    let port = env::var("PORT").expect("PORT not found in .env").parse().unwrap();
+
     // Create the AppState
     let app_state = AppState {
         db_pool: db_pool.clone(),
@@ -60,11 +62,10 @@ async fn main() -> std::io::Result<()> {
 
     // Print a message to show that the server has started successfully with time
     println!(
-        "{} Server is running",
-        chrono::Local::now()
+        "{} Server is running on port {}",
+        chrono::Local::now(),port
     );
 
-    println!("Nice one");
 
     let item_repo = ItemRepository::new(web::Data::new(app_state.clone()));
     let item_service = ItemService::new(item_repo);
@@ -119,7 +120,7 @@ async fn main() -> std::io::Result<()> {
             .service(index_route)
     })
     //4125 idk why but 8080 dont work 
-    .bind(("0.0.0.0", 4125))?
+    .bind(("0.0.0.0", port))?
     .run()
     .await
 }
