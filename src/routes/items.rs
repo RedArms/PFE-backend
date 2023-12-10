@@ -16,3 +16,13 @@ async fn get_item(
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
+
+#[get("/")]
+async fn get_items(item_service: web::Data<ItemService>) -> impl Responder {
+    let items = item_service.get_all_items().await;
+
+    match items {
+        Ok(items) => HttpResponse::Ok().json(items),
+        Err(_) => HttpResponse::InternalServerError().into(),
+    }
+}

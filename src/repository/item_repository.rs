@@ -24,4 +24,12 @@ impl ItemRepository {
 
         Ok(item)
     }
+
+    pub async fn get_all_items(&self) -> Result<Vec<Item>, Error> {
+        let items = sqlx::query_as!(Item, "SELECT item_id, label, size FROM pfe.items")
+            .fetch_all(&self.app_state.db_pool)
+            .await?;
+
+        Ok(items)
+    }
 }

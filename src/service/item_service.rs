@@ -15,4 +15,8 @@ impl ItemService {
     pub async fn get_item(&self, id: i32) -> Result<Option<Item>, Error> {
         self.item_repo.get_item(id).await
     }
+
+    pub async fn get_all_items(&self) -> Result<Vec<Item>, Error> {
+        self.item_repo.get_all_items().await
+    }
 }
