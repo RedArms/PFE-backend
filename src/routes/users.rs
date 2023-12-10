@@ -7,9 +7,7 @@ async fn get_user(
     user_service: web::Data<UserService>,
 ) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
-    print!("on passe 1 ");
     let user = user_service.get_user(id).await;
-    print!("on passe 2");
     match user {
         Ok(Some(user)) => Ok(HttpResponse::Ok().json(user)),
         Ok(None) => Err(error::ErrorNotFound("Item not found")),
