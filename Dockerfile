@@ -17,6 +17,7 @@ COPY src ./src
 
 # for being observed 
 LABEL com.centurylinklabs.watchtower.enable="true"
+
 # Compilez l'application
 # Si votre application utilise un port, exposez-le
 EXPOSE ${PORT}

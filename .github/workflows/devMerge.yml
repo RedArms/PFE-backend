@@ -1,11 +1,14 @@
-name: Merge to Dev and Main
+name: Merge (PR accepted) to Dev (going to pr to main)
 
 on:
   pull_request:
     branches: ["develop"]
+    types: [closed]
+    
 
 jobs:
   build:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
 
     environment: all
