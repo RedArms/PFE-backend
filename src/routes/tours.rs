@@ -16,6 +16,20 @@ async fn get_all_tours(
     }
 }
 
+#[get("/{id}")]
+async fn get_tour_by_id(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+    let tour = tours_service.get_by_id(id).await;
+    match tour {
+        Ok(None) => Err(error::ErrorNotFound("Tour not found")),
+        Ok(tour) => Ok(HttpResponse::Ok().json(tour)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
@@ -72,10 +86,13 @@ async fn set_deliverer(
     }
 }
 
+
+
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(
     tour_service: web::Data<ToursService>,
 ) -> Result<HttpResponse, error::Error> {
+    println!("get_all_not_delivered"    );
     let tours_day = tour_service.get_tours_day_avalaible().await;
     match tours_day {
         Ok(orders) => Ok(HttpResponse::Ok().json(orders)),

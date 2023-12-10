@@ -80,4 +80,16 @@ impl ToursRepository {
 
         Ok(tours)
     }
+
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Tours>, Error> {
+        let tour = sqlx::query_as!(Tours, "SELECT * FROM pfe.tours WHERE tour_id= $1", id)
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
+
+        println!("tour: {:?}", tour );
+        match tour {
+            Some(tour) => Ok(Some(tour)),
+            None => Ok(None),
+        }
+    }
 }

@@ -7,7 +7,6 @@ pub async fn get_all_boxes_client_tour(
     path: web::Path<(i32, i32, String)>,
 ) -> Result<HttpResponse, error::Error> {
     let (id, tour_day, date) = path.into_inner();
-    println!("id : {}",id);
     let result = client_service
         .get_all_boxes(id, tour_day, date)
         .await
