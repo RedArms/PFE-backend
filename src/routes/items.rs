@@ -1,5 +1,5 @@
 use crate::service::item_service::ItemService;
-use actix_web::{error, get, web, HttpResponse, Responder, Result};
+use actix_web::{error, get, web, HttpResponse, Result};
 
 #[get("/{id}")]
 async fn get_item(

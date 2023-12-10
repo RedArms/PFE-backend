@@ -37,7 +37,7 @@ impl ClientService {
     ) -> Result<Vec<Boxe>, Error> {
         let id_order = self.order_repo.get_order_id(id, tour_day, date).await?;
         println!("id_order : {}", id_order);
-        if (id_order == 0) {
+        if id_order == 0 {
             return Ok(Vec::new());
         }
         self.boxe_repo.get_all_boxes(id_order).await

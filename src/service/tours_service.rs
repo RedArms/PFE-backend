@@ -17,6 +17,10 @@ impl ToursService {
         self.tours_repo.get_all_tours().await
     }
 
+    pub async fn get_all_tours_day(&self) -> Result<Vec<ToursDay>, Error> {
+        return self.tours_repo.get_all_tours_day().await;
+    }
+
     pub async fn get_tours_today(&self) -> Result<Vec<ToursDay>, Error> {
         self.tours_repo.get_tours_today().await
     }
@@ -36,6 +40,9 @@ impl ToursService {
     pub async fn get_tours_day_avalaible(&self) -> Result<Vec<ToursDay>, Error> {
         return self.tours_repo.get_tours_day_avalaible().await;
     }
+
+
+
 
     pub async fn get_by_id(&self, id: i32) -> Result<Option<Tours>, Error> {
         return self.tours_repo.get_by_id(id).await;

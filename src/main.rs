@@ -19,7 +19,8 @@ use routes::index::{hello, helloworld};
 use routes::items::get_item;
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_tour_by_id,
-    get_tours_deliverer_day, get_tours_today, set_deliverer,get_tours_by_delivery_day
+    get_tours_deliverer_day, get_tours_today, set_deliverer,get_tours_by_delivery_day,
+    get_tours_date,get_all_tours_day
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
 
@@ -100,6 +101,8 @@ async fn main() -> std::io::Result<()> {
             .service(set_admin);
         let item_route = actix_web::web::scope("/items").service(get_item);
         let tour_route = actix_web::web::scope("/tours")
+            .service(get_all_tours_day)
+            .service(get_tours_date)
             .service(get_tours_by_delivery_day)
             .service(get_all_tours)
             .service(get_tours_today)
