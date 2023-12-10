@@ -1,8 +1,8 @@
-use crate::service::{
+use crate::{service::{
     client_service::ClientService,
     order_service::{self, OrderService},
     tours_service::ToursService,
-};
+}, models::order};
 use actix_web::{error, get, post, web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 
@@ -69,7 +69,6 @@ async fn set_deliverer(
     tours_service: web::Data<ToursService>,
     payload: web::Json<SetDelivererRequest>,
 ) -> Result<HttpResponse, error::Error> {
-    println!("testtest");
     match tours_service
         .set_deliverer(payload.tour, payload.date.clone(), payload.delivery_person)
         .await

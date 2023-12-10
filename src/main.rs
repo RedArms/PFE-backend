@@ -81,10 +81,10 @@ async fn main() -> std::io::Result<()> {
     let item_service = ItemService::new(item_repo.clone());
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
     let user_service = UserService::new(user_repo.clone());
-    let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
-    let tours_service = ToursService::new(tours_repo.clone());
     let order_repo = OrderRepository::new(web::Data::new(app_state.clone()));
     let order_service = OrderService::new(order_repo.clone());
+    let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
+    let tours_service = ToursService::new(tours_repo.clone(),order_repo.clone());
     let boxe_repo = BoxeRepository::new(web::Data::new(app_state.clone()));
     let boxe_service = BoxeService::new(boxe_repo.clone());
     let client_repo = ClientRepository::new(web::Data::new(app_state.clone()));
