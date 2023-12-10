@@ -42,7 +42,7 @@ CREATE TABLE pfe.items (
 CREATE TABLE pfe.client_lines (
     client INTEGER REFERENCES pfe.clients(client_id),
     item INTEGER REFERENCES pfe.items(item_id),
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    quantity INTEGER NOT NULL CHECK (quantity >= 0),
     PRIMARY KEY (client, item)
 );
 
@@ -101,7 +101,10 @@ INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
 INSERT INTO pfe.clients (name, address, tour) VALUES
 ('Jean Dupont', '123 rue de la Paix, Paris', 1),
 ('Marie Curie', '456 avenue des Champs-Élysées, Paris', 1),
-('Henri Poincaré', '789 boulevard Saint-Michel, Marseille', NULL);
+('Henri Poincaré', '789 boulevard Saint-Michel, Marseille', NULL),
+('Pierre de Fermat', '1011 rue de la République, Lyon', 2),
+('Blaise Pascal', '1213 avenue Jean Jaurès, Lyon', 2);
+
 
 -- Insert data into 'items'
 INSERT INTO pfe.items (label, size) VALUES
@@ -123,7 +126,9 @@ INSERT INTO pfe.client_lines (client, item, quantity) VALUES
 -- Insert data into 'tour_days'
 INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
     (1, 2, '2023-12-09'),
-    (1, 2, '2023-12-10'),
+    (1, NULL, '2023-12-10'),
+    (2, NULL, '2023-12-10'),
+    (3, 1, '2023-12-10'),
     (2, 3, '2023-12-09'),
     (2, 3, '2023-12-02'),
     (3, NULL, '2023-12-03');
