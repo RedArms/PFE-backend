@@ -13,10 +13,13 @@ use std::env;
 use routes::items::get_item;
 use routes::users::{get_user, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
+use routes::client::{get_all_clients, add_client, delete_client, get_order, update_order};
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::user_repository::UserRepository;
+use crate::repository::client_repository::ClientRepository;
 use crate::service::item_service::ItemService;
 use crate::service::user_service::UserService;
+use crate::service::client_service::ClientService;
 
 #[derive(Clone)]
 struct AppState {
@@ -48,6 +51,8 @@ async fn main() -> std::io::Result<()> {
     let item_service = ItemService::new(item_repo);
     let user_repo = UserRepository::new(web::Data::new(app_state.clone()));
     let user_service = UserService::new(user_repo);
+    let client_repo = ClientRepository::new(web::Data::new(app_state.clone()));
+    let client_service = ClientService::new(client_repo);
 
     // Start the Actix server
     HttpServer::new(move || {
@@ -58,6 +63,12 @@ async fn main() -> std::io::Result<()> {
             .service(set_admin);
         let item_route = actix_web::web::scope("/items")
             .service(get_item);
+        let client_route = actix_web::web::scope("/client")
+            .service(get_all_clients)
+            .service(add_client)
+            .service(delete_client)
+            .service(get_order)
+            .service(update_order);
         //index in last because empty route path
         let index_route = actix_web::web::scope("")
             .service(helloworld)
@@ -67,8 +78,10 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(app_state.clone()))
             .app_data(web::Data::new(item_service.clone()))
             .app_data(web::Data::new(user_service.clone()))// Add ItemService to application data
+            .app_data(web::Data::new(client_service.clone()))
             .service(item_route)
             .service(user_route)
+            .service(client_route)
             .service(index_route)
     })
     .bind(("0.0.0.0", 8080))?
