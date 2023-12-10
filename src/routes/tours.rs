@@ -1,10 +1,10 @@
 use crate::{service::{
     client_service::ClientService,
-    order_service::{self, OrderService},
+    order_service::OrderService,
     tours_service::ToursService,
 }, models::order};
 use actix_web::{error, get, post, web, HttpResponse, Result};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[get("/")]
 async fn get_all_tours(
@@ -36,6 +36,32 @@ async fn get_tours_today(
     tours_service: web::Data<ToursService>,
 ) -> Result<HttpResponse, error::Error> {
     let tours = tours_service.get_tours_today().await;
+    match tours {
+        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
+#[get("/toursday")]
+async fn get_all_tours_day(
+    tours_service: web::Data<ToursService>
+) -> Result<HttpResponse, error::Error> {
+    println!("oue");
+    let tours = tours_service.get_all_tours_day().await;
+    match tours {
+        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
+#[get("/tours/{date}")]
+async fn get_tours_date(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<String>
+) -> Result<HttpResponse, error::Error> {
+    let date = path.into_inner();
+    println!("{}", date);
+    let tours = tours_service.get_tours_by_delivery_day(date).await;
     match tours {
         Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),

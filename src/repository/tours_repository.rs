@@ -1,8 +1,8 @@
 use crate::models::tours::Tours;
 use crate::models::tours_day::ToursDay;
 use actix_web::web;
-use chrono::NaiveDate;
 use sqlx::Error;
+use chrono::NaiveDate;
 
 #[derive(Clone)]
 pub struct ToursRepository {
@@ -19,6 +19,13 @@ impl ToursRepository {
             .fetch_all(&self.app_state.db_pool)
             .await?;
 
+        Ok(tours)
+    }
+
+    pub async fn get_all_tours_day(&self) -> Result<Vec<ToursDay>, Error> {
+        let tours = sqlx::query_as!(ToursDay, "SELECT * FROM pfe.tour_days")
+            .fetch_all(&self.app_state.db_pool)
+            .await?;
         Ok(tours)
     }
 
@@ -43,6 +50,19 @@ impl ToursRepository {
         )
         .fetch_all(&self.app_state.db_pool)
         .await?;
+
+        Ok(tours)
+    }
+
+    pub async fn get_tours_ay(&self) -> Result<Vec<ToursDay>, Error> {
+        let current_date: chrono::prelude::NaiveDate = chrono::Local::now().naive_local().date();
+        let tours = sqlx::query_as!(
+            ToursDay,
+            "SELECT * FROM pfe.tour_days WHERE date = $1",
+            current_date
+        )
+            .fetch_all(&self.app_state.db_pool)
+            .await?;
 
         Ok(tours)
     }
@@ -94,7 +114,7 @@ impl ToursRepository {
         let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let tours = sqlx::query_as!(
             ToursDay,
-            "SELECT * FROM pfe.tour_days WHERE date = '2023-12-09' ",
+            "SELECT * FROM pfe.tour_days WHERE date = $1 ",date
         )
         .fetch_all(&self.app_state.db_pool)
         .await?;
