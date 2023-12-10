@@ -33,13 +33,17 @@ impl ToursService {
             .await;
     }
 
-    pub async fn get_tours_day_avalaible(
-        &self
-    ) -> Result<Vec<ToursDay>, Error> {
+    pub async fn get_tours_day_avalaible(&self) -> Result<Vec<ToursDay>, Error> {
         return self.tours_repo.get_tours_day_avalaible().await;
     }
 
-    pub async fn get_by_id (&self, id: i32) -> Result<Option<Tours>, Error> {
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Tours>, Error> {
         return self.tours_repo.get_by_id(id).await;
+    }
+
+    pub async fn get_tours_by_delivery_day(&self, date: String) -> Result<Vec<ToursDay>, Error> {
+        println!("get_tours_by_delivery_day SEVICE");
+        
+        return self.tours_repo.get_tours_by_delivery_day(date).await;
     }
 }
