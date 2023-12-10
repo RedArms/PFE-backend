@@ -43,7 +43,7 @@ impl ToursService {
 
     pub async fn get_tours_by_delivery_day(&self, date: String) -> Result<Vec<ToursDay>, Error> {
         println!("get_tours_by_delivery_day SEVICE");
-        
+
         return self.tours_repo.get_tours_by_delivery_day(date).await;
     }
 }

@@ -55,7 +55,7 @@ impl ToursRepository {
     ) -> Result<u64, Error> {
         let current_date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let result = sqlx::query!(
-            "UPDATE pfe.tour_days SET delivery_person  = $1 WHERE tour = $2 AND date = $3 AND delivery_person IS NULL",
+            "UPDATE pfe.tour_days SET delivery_person  = $1 WHERE tour = $2 AND date = $3 ",
             deliverer_id,
             tour,
             current_date
@@ -93,7 +93,7 @@ impl ToursRepository {
     pub async fn get_tours_by_delivery_day(&self, date: String) -> Result<Vec<ToursDay>, Error> {
         let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let tours = sqlx::query_as!(
-            ToursDay, 
+            ToursDay,
             "SELECT * FROM pfe.tour_days WHERE date = '2023-12-09' ",
         )
         .fetch_all(&self.app_state.db_pool)

@@ -1,6 +1,7 @@
 use crate::service::{
+    client_service::ClientService,
     order_service::{self, OrderService},
-    tours_service::{self, ToursService},
+    tours_service::ToursService,
 };
 use actix_web::{error, get, post, web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
@@ -68,6 +69,7 @@ async fn set_deliverer(
     tours_service: web::Data<ToursService>,
     payload: web::Json<SetDelivererRequest>,
 ) -> Result<HttpResponse, error::Error> {
+    println!("testtest");
     match tours_service
         .set_deliverer(payload.tour, payload.date.clone(), payload.delivery_person)
         .await
@@ -86,7 +88,6 @@ async fn set_deliverer(
     }
 }
 
-
 #[get("/date/{date}")]
 async fn get_tours_by_delivery_day(
     path: web::Path<String>,
@@ -100,15 +101,26 @@ async fn get_tours_by_delivery_day(
     }
 }
 
-
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(
     tour_service: web::Data<ToursService>,
 ) -> Result<HttpResponse, error::Error> {
-    println!("get_all_not_delivered");
     let tours_day = tour_service.get_tours_day_avalaible().await;
     match tours_day {
         Ok(orders) => Ok(HttpResponse::Ok().json(orders)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
+#[get("/getTours/{id}/getAllClient")]
+async fn get_all_client_by_tour(
+    client_service: web::Data<ClientService>,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+    let tour = client_service.get_all_client_by_tour(id).await;
+    match tour {
+        Ok(tour) => Ok(HttpResponse::Ok().json(tour)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }

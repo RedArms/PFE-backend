@@ -7,10 +7,7 @@ pub async fn get_all_boxes_client_tour(
     path: web::Path<(i32, i32, String)>,
 ) -> Result<HttpResponse, error::Error> {
     let (id, tour_day, date) = path.into_inner();
-    let result = client_service
-        .get_all_boxes(id, tour_day, date)
-        .await
-        .unwrap();
+    let result = client_service.get_all_boxes_client(id, tour_day, date).await.unwrap();
 
     match result.len() {
         0 => return Err(error::ErrorNotFound("No boxes found")),
@@ -18,3 +15,4 @@ pub async fn get_all_boxes_client_tour(
         ,
     }
 }
+
