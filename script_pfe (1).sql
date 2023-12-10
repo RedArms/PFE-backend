@@ -10,7 +10,7 @@ CREATE TABLE pfe.users (
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT false,
     is_delivery_person BOOLEAN NOT NULL DEFAULT false,
     is_verified BOOLEAN NOT NULL DEFAULT false
@@ -79,10 +79,17 @@ CREATE TABLE pfe.boxes (
 );
 
 -- Insert data into 'users'
-INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, is_delivery_person, is_verified) VALUES
-('Alice', 'Durand', 'alice.durand@example.com', '1234567890', 'password123', false, false, true),
-('Bob', 'Lefebvre', 'bob.lefebvre@example.com', '2345678901', 'password234', true, true, true),
-('Claire', 'Martin', 'claire.martin@example.com', '3456789012', 'password345', false, true, false);
+INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, is_delivery_person, is_verified)
+VALUES ('Alice', 'Durand', 'alice.durand@example.com', '1234567890',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', false, false, true),
+       ('Bob', 'Lefebvre', 'bob.lefebvre@example.com', '2345678901',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', true, true, true),
+       ('Claire', 'Martin', 'claire.martin@example.com', '3456789012',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', false, true, false),
+       ('admin', 'admin', 'admin', '11111111111111111', '$2a$10$xRPu0IXEuUpep346ho8i7OOCSEz7RCyC/19WPS0DhiNxr1kl2gSv6',
+        true, false, true),
+       ('livreur', 'livreur', 'livreur', '08222222', '$2a$10$uy9p2gvW2QVZhlk3y9KOZO8R9Sa34O4yip42NHb85EQBRs8y2mgnq',
+        false, true, true);
 
 -- Insert data into 'tours'
 INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
