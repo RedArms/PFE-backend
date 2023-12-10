@@ -137,6 +137,7 @@ INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
 INSERT INTO pfe.orders (client, status, tour, date) VALUES
 (1, 'recupere', 1, '2023-12-09'),
 (2, 'lavage', 1, '2023-12-10'),
+(1, 'attente livraison', 2, '2023-12-10'),
 (3, 'attente livraison', 2, '2023-12-09'),
 (1, 'en cours de livraison', 2, '2023-12-02'),
 (2, 'livre', 3, '2023-12-03');
