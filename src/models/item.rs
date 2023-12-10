@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
+use sqlx::{FromRow, postgres::PgRow, Error, Row};
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Item {
     pub item_id: i32,
     pub label: String,
@@ -16,3 +17,4 @@ impl Item {
         }
     }
 }
+
