@@ -42,4 +42,21 @@ impl OrderRepository {
 
         Ok(order.map(|o| o.order_id).unwrap_or(0))
     }
+
+    pub async fn set_state_delivering(
+        &self,
+        date: String,
+        tour: i32,
+    ) -> Result<u64, Error> {
+        let date_parsed = chrono::NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
+        let orders = sqlx::query!(
+            "UPDATE pfe.orders SET status = 'en cours de livraison' WHERE date = $1 AND tour = $2",
+            date_parsed,
+            tour
+        )
+        .execute(&self.app_state.db_pool)
+        .await?;
+
+        Ok(orders.rows_affected())
+    }
 }

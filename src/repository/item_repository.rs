@@ -1,6 +1,5 @@
 use crate::models::item::Item;
 use actix_web::web;
-use sqlx::postgres::PgPool;
 use sqlx::Error;
 
 #[derive(Clone)]

@@ -10,7 +10,7 @@ CREATE TABLE pfe.users (
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT false,
     is_delivery_person BOOLEAN NOT NULL DEFAULT false,
     is_verified BOOLEAN NOT NULL DEFAULT false
@@ -42,7 +42,7 @@ CREATE TABLE pfe.items (
 CREATE TABLE pfe.client_lines (
     client INTEGER REFERENCES pfe.clients(client_id),
     item INTEGER REFERENCES pfe.items(item_id),
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    quantity INTEGER NOT NULL CHECK (quantity >= 0),
     PRIMARY KEY (client, item)
 );
 
@@ -79,10 +79,17 @@ CREATE TABLE pfe.boxes (
 );
 
 -- Insert data into 'users'
-INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, is_delivery_person, is_verified) VALUES
-('Alice', 'Durand', 'alice.durand@example.com', '1234567890', 'password123', false, false, true),
-('Bob', 'Lefebvre', 'bob.lefebvre@example.com', '2345678901', 'password234', true, true, true),
-('Claire', 'Martin', 'claire.martin@example.com', '3456789012', 'password345', false, true, false);
+INSERT INTO pfe.users (first_name, last_name, email, phone, password, is_admin, is_delivery_person, is_verified)
+VALUES ('Alice', 'Durand', 'alice.durand@example.com', '1234567890',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', false, false, true),
+       ('Bob', 'Lefebvre', 'bob.lefebvre@example.com', '2345678901',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', true, true, true),
+       ('Claire', 'Martin', 'claire.martin@example.com', '3456789012',
+        '$2a$10$GC6lpZkl/MPs.NL6gSSgKeQjk8mK9nyot/4ZGa5EiTuc5JdpXgUXS', false, true, false),
+       ('admin', 'admin', 'admin', '11111111111111111', '$2a$10$xRPu0IXEuUpep346ho8i7OOCSEz7RCyC/19WPS0DhiNxr1kl2gSv6',
+        true, false, true),
+       ('livreur', 'livreur', 'livreur', '08222222', '$2a$10$uy9p2gvW2QVZhlk3y9KOZO8R9Sa34O4yip42NHb85EQBRs8y2mgnq',
+        false, true, true);
 
 -- Insert data into 'tours'
 INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
@@ -94,7 +101,10 @@ INSERT INTO pfe.tours (geo_zone, delivery_person) VALUES
 INSERT INTO pfe.clients (name, address, tour) VALUES
 ('Jean Dupont', '123 rue de la Paix, Paris', 1),
 ('Marie Curie', '456 avenue des Champs-Élysées, Paris', 1),
-('Henri Poincaré', '789 boulevard Saint-Michel, Marseille', NULL);
+('Henri Poincaré', '789 boulevard Saint-Michel, Marseille', NULL),
+('Pierre de Fermat', '1011 rue de la République, Lyon', 2),
+('Blaise Pascal', '1213 avenue Jean Jaurès, Lyon', 2);
+
 
 -- Insert data into 'items'
 INSERT INTO pfe.items (label, size) VALUES
@@ -116,7 +126,9 @@ INSERT INTO pfe.client_lines (client, item, quantity) VALUES
 -- Insert data into 'tour_days'
 INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
     (1, 2, '2023-12-09'),
-    (1, 2, '2023-12-10'),
+    (1, NULL, '2023-12-10'),
+    (2, NULL, '2023-12-10'),
+    (3, 1, '2023-12-10'),
     (2, 3, '2023-12-09'),
     (2, 3, '2023-12-02'),
     (3, NULL, '2023-12-03');
@@ -125,6 +137,7 @@ INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
 INSERT INTO pfe.orders (client, status, tour, date) VALUES
 (1, 'recupere', 1, '2023-12-09'),
 (2, 'lavage', 1, '2023-12-10'),
+(1, 'attente livraison', 2, '2023-12-10'),
 (3, 'attente livraison', 2, '2023-12-09'),
 (1, 'en cours de livraison', 2, '2023-12-02'),
 (2, 'livre', 3, '2023-12-03');
