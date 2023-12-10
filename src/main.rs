@@ -16,7 +16,7 @@ use actix_cors::Cors;
 use routes::items::get_item;
 use routes::users::{get_user, get_all_users, verify_user, revoke_user, set_admin};
 use routes::index::{hello, helloworld};
-use routes::tours::{get_all_tours, get_tours_today, get_tours_deliverer_day, set_deliverer};
+use routes::tours::{get_all_tours, get_tours_today, get_tours_deliverer_day, set_deliverer,get_all_not_delivered};
 use routes::boxe::get_all_boxes;
 use routes::auth::{login_user, register_user};
 
@@ -90,7 +90,7 @@ async fn main() -> std::io::Result<()> {
         let tour_route = actix_web::web::scope("/tours")
             .service(get_all_tours)
             .service(get_tours_today)
-
+            .service(get_all_not_delivered)
             .service(get_tours_deliverer_day)
             .service(set_deliverer);
         let boxe_route = actix_web::web::scope("/boxes")
