@@ -19,4 +19,8 @@ impl ItemService {
     pub async fn get_all_items(&self) -> Result<Vec<Item>, Error> {
         self.item_repo.get_all_items().await
     }
+
+    pub async fn create_item(&self, item: Item) -> Result<Item, Error> {
+        self.item_repo.create_item(item).await
+    }
 }

@@ -32,4 +32,17 @@ impl ItemRepository {
 
         Ok(items)
     }
+
+    pub async fn create_item(&self, item: Item) -> Result<Item, Error> {
+        let item = sqlx::query_as!(
+            Item,
+            "INSERT INTO pfe.items (label, size) VALUES ($1, $2) RETURNING item_id, label, size",
+            item.label,
+            item.size
+        )
+        .fetch_one(&self.app_state.db_pool)
+        .await?;
+
+        Ok(item)
+    }
 }
