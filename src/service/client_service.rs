@@ -1,10 +1,8 @@
 use crate::models::regular_order::RegularOrder;
-use crate::regular_order_line::RegularOrderLine;
 use crate::repository::client_repository::ClientRepository;
 use crate::models::boxe::Boxe;
 use crate::models::client::Client;
 use crate::repository::boxe_repository::BoxeRepository;
-use crate::repository::client_repository::ClientRepository;
 use crate::repository::order_repository::OrderRepository;
 use sqlx::Error;
 
