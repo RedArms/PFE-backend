@@ -1,6 +1,8 @@
 use actix_web::{get, post, delete, put, HttpResponse, Result, web, error};
 use serde::de;
-use crate::{service::client_service::ClientService, models::{regular_order, regular_order_line}};
+use crate::service::client_service::ClientService;
+use crate::models::regular_order::RegularOrder;
+use crate::models::client::Client;
 
 #[get("/")]
 async fn get_all_clients(client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
@@ -13,7 +15,7 @@ async fn get_all_clients(client_service: web::Data<ClientService>) -> Result<Htt
 }
 
 #[post("/")]
-async fn add_client(client: web::Json<crate::models::client::Client>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn add_client(client: web::Json<Client>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
     let client_result = client_service.add_client(client.into_inner()).await;
 
     match client_result {
@@ -47,7 +49,7 @@ async fn get_order(path: web::Path<i32>, client_service: web::Data<ClientService
 }
 
 #[put("/orders/{id}")]
-async fn update_order(path: web::Path<i32>, regular_order: web::Json<regular_order::RegularOrder>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn update_order(path: web::Path<i32>, regular_order: web::Json<RegularOrder>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
     let result = client_service.update_order(id, regular_order.into_inner()).await;
