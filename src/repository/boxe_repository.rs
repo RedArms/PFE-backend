@@ -11,6 +11,7 @@ impl BoxeRepository {
     pub fn new(app_state: web::Data<crate::AppState>) -> Self {
         Self { app_state }
     }
+    
     pub async fn get_all_boxes(&self, id: i32) -> Result<Vec<Boxe>, Error> {
         let boxes = sqlx::query_as!(
             Boxe,

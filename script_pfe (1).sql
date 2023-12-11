@@ -106,6 +106,7 @@ INSERT INTO pfe.clients (name, address, tour) VALUES
                                                   ('Blaise Pascal', '1213 avenue Jean Jaurès, Lyon', 2),
                                                   ('Henri le pied ron ', 'boulevard 323 la clinique, Marseille', 3);
 
+
 -- Insert data into 'items'
 INSERT INTO pfe.items (label, size) VALUES
                                         ('langes', 'S'),
@@ -117,16 +118,36 @@ INSERT INTO pfe.items (label, size) VALUES
 
 -- Insert data into 'client_lines'
 INSERT INTO pfe.client_lines (client, item, quantity) VALUES
-                                                          (1, 1, 2),
-                                                          (1, 2, 1),
-                                                          (2, 3, 3),
-                                                          (2, 4, 1),
-                                                          (3, 5, 1),
-                                                          (4,1,43),
-                                                          (4,2,323),
-                                                          (4,4,3),
-                                                          (5 ,4,3 );
-
+                                             (1, 1, 2),
+(1, 2, 1),
+(1, 3, 2),
+(1, 4, 1),
+(1, 5, 2),
+(1, 6, 1),
+(2, 1, 3),
+(2, 2, 1),
+(2, 3, 3),
+(2, 4, 1),
+(2, 5, 3),
+(2, 6, 1),
+(3, 1, 1),
+(3, 2, 1),
+(3, 3, 1),
+(3, 4, 1),
+(3, 5, 1),
+(3, 6, 1),
+(4, 1, 1),
+(4, 2, 1),
+(4, 3, 1),
+(4, 4, 1),
+(4, 5, 1),
+(4, 6, 1),
+(5, 1, 1),
+(5, 2, 1),
+(5, 3, 1),
+(5, 4, 1),
+(5, 5, 1),
+(5, 6, 1);
 
 -- Insert data into 'tour_days'
 INSERT INTO pfe.tour_days (tour, delivery_person, date) VALUES
@@ -190,7 +211,5 @@ FROM pfe.client_lines cl
 WHERE c.tour IS NOT NULL;
 END;
 $$;
-
-call create_tour_day(CURRENT_DATE);
 call create_tour_day('2023-12-12');
 call create_tour_day('2023-12-13');

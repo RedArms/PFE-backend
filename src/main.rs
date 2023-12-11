@@ -21,14 +21,14 @@ use std::time::Duration as StdDuration;
 use routes::auth::{login_user, register_user};
 use routes::boxe::get_all_boxes;
 use routes::index::{hello, helloworld};
-use routes::items::{create_item, get_item, get_items};
+use routes::client::{get_all_clients, add_client, delete_client, get_order, update_order};
+use routes::items::{get_item, get_items, create_item};
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
     get_tour_by_id, get_tours_by_delivery_day, get_tours_date, get_tours_deliverer_day,
     get_tours_today, set_deliverer,
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
-
 use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::client_repository::ClientRepository;
 use crate::repository::item_repository::ItemRepository;
@@ -151,6 +151,13 @@ async fn main() -> std::io::Result<()> {
             .service(verify_user)
             .service(revoke_user)
             .service(set_admin);
+
+        let client_route = actix_web::web::scope("/client")
+            .service(get_all_clients)
+            .service(add_client)
+            .service(delete_client)
+            .service(get_order)
+            .service(update_order);
         let item_route = actix_web::web::scope("/items")
             .service(get_item)
             .service(get_items)
@@ -192,6 +199,7 @@ async fn main() -> std::io::Result<()> {
             .service(auth_route)
             .service(tour_route)
             .service(boxe_route)
+            .service(client_route)
             .service(index_route)
     })
     //4125 idk why but 8080 dont work
