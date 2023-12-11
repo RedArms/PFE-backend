@@ -62,26 +62,33 @@ impl ClientRepository {
     }
 
     pub async fn delete_client(&self, id: i32) -> Result<(), Error> {
-        let query = sqlx::query!("SELECT order_id FROM pfe.orders WHERE client = $1", id)
-            .fetch_one(&self.app_state.db_pool)
+        println!("id: {}", id);
+        let order_ids = sqlx::query!("SELECT order_id FROM pfe.orders WHERE client = $1", id)
+            .fetch_all(&self.app_state.db_pool)
             .await?;
 
-        sqlx::query!("DELETE FROM pfe.boxes WHERE order_id = $1", query.order_id)
-            .execute(&self.app_state.db_pool)
-            .await?;
+        println!("order_ids: {:?}", order_ids);
 
-        sqlx::query!("DELETE FROM pfe.orders WHERE client = $1", id)
-            .execute(&self.app_state.db_pool)
-            .await?;
-
+        for record in order_ids {
+            println!("order_id: {}", record.order_id);
+            sqlx::query!("DELETE FROM pfe.boxes WHERE order_id = $1", record.order_id)
+                .execute(&self.app_state.db_pool)
+                .await?;
+            println!("Delete boxes");
+            sqlx::query!("DELETE FROM pfe.orders WHERE client = $1", id)
+                .execute(&self.app_state.db_pool)
+                .await?;
+            println!("Delete orders");
+        }
+        
         sqlx::query!("DELETE FROM pfe.client_lines WHERE client = $1", id)
             .execute(&self.app_state.db_pool)
             .await?;
-
+        println!("Delete client_lines");
         sqlx::query!("DELETE FROM pfe.clients WHERE client_id = $1", id)
             .execute(&self.app_state.db_pool)
             .await?;
-
+        println!("Delete client");
         Ok(())
     }
     
