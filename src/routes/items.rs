@@ -1,7 +1,5 @@
-use crate::{service::item_service::ItemService,models::item::Item};
+use crate::{models::item::Item, service::item_service::ItemService};
 use actix_web::{error, get, post, web, HttpResponse, Responder, Result};
-
-
 
 /**
  * Get an item by id

@@ -6,21 +6,26 @@ mod tests;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
+use chrono::{Datelike, Duration, Local, Utc};
 use dotenv::dotenv;
 use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
 use sqlx::{postgres::PgPool, Error};
+use sqlx::error::Error as SqlxError;
+
 use std::env;
+use std::thread;
+use std::time::Duration as StdDuration;
 
 // Import functions for each route
 use routes::auth::{login_user, register_user};
 use routes::boxe::get_all_boxes;
 use routes::index::{hello, helloworld};
-use routes::items::{get_item, get_items, create_item};
+use routes::items::{create_item, get_item, get_items};
 use routes::tours::{
-    get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_tour_by_id,
-    get_tours_deliverer_day, get_tours_today, set_deliverer,get_tours_by_delivery_day,
-    get_tours_date,get_all_tours_day
+    get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
+    get_tour_by_id, get_tours_by_delivery_day, get_tours_date, get_tours_deliverer_day,
+    get_tours_today, set_deliverer,
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
 
@@ -50,6 +55,50 @@ async fn init_db_pool() -> Result<PgPool, Error> {
     PgPool::connect(&database_url).await
 }
 
+async fn create_tour_day(db_pool: &PgPool) -> Result<(), sqlx::Error > {
+    // Get the current date 
+
+    println!("Creating tour day");
+    let current_date = Utc::now();
+    let new_date = current_date + Duration::days(3);
+    if new_date.weekday().number_from_monday() >5 {
+        return Err(SqlxError::Io(*Box::new(std::io::Error::new(std::io::ErrorKind::Other, "Weekend: no tour day created"))));
+    }
+    let formatted_date =
+        chrono::NaiveDate::parse_from_str(&new_date.format("%Y-%m-%d").to_string(), "%Y-%m-%d")
+            .unwrap();
+    sqlx::query!("call create_tour_day( $1 );", formatted_date)
+        .execute(db_pool)
+        .await?;
+
+    Ok(())
+}
+
+async fn run_daily_automation(app_state: AppState) {
+    // Démarrez une tâche quotidienne dans un thread séparé
+    tokio::spawn(async move {
+        // Clone the database pool from the app_state
+        let db_pool = app_state.db_pool.clone();
+
+        loop {
+            let now = Local::now();
+
+            let next_day = now.date().succ_opt().unwrap_or(now.date()).and_hms(0, 0, 0);
+
+            let duration_until_next_day = next_day.signed_duration_since(now);
+
+            let create_run = create_tour_day(&db_pool).await;
+            thread::sleep(StdDuration::from_secs(duration_until_next_day.num_seconds() as u64));
+
+            // Pass db_pool as an argument to create_tour_day
+            match create_run {
+                Ok(()) => println!("Tuple créé avec succès"),
+                Err(e) => eprintln!("Erreur lors de la création du tuple : {:?}", e),
+            }
+        }
+    });
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -58,6 +107,11 @@ async fn main() -> std::io::Result<()> {
     let db_pool = init_db_pool()
         .await
         .expect("Failed to create database pool");
+
+    run_daily_automation(AppState {
+        db_pool: db_pool.clone(),
+    })
+    .await;
 
     let port = env::var("PORT")
         .expect("PORT not found in .env")
@@ -83,7 +137,7 @@ async fn main() -> std::io::Result<()> {
     let order_repo = OrderRepository::new(web::Data::new(app_state.clone()));
     let order_service = OrderService::new(order_repo.clone());
     let tours_repo = ToursRepository::new(web::Data::new(app_state.clone()));
-    let tours_service = ToursService::new(tours_repo.clone(),order_repo.clone());
+    let tours_service = ToursService::new(tours_repo.clone(), order_repo.clone());
     let boxe_repo = BoxeRepository::new(web::Data::new(app_state.clone()));
     let boxe_service = BoxeService::new(boxe_repo.clone());
     let client_repo = ClientRepository::new(web::Data::new(app_state.clone()));
@@ -97,7 +151,10 @@ async fn main() -> std::io::Result<()> {
             .service(verify_user)
             .service(revoke_user)
             .service(set_admin);
-        let item_route = actix_web::web::scope("/items").service(get_item).service(get_items).service(create_item);
+        let item_route = actix_web::web::scope("/items")
+            .service(get_item)
+            .service(get_items)
+            .service(create_item);
         let tour_route = actix_web::web::scope("/tours")
             .service(get_all_tours_day)
             .service(get_tours_date)
