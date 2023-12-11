@@ -1,7 +1,6 @@
-use actix_web::{get, post, delete, put, HttpResponse, Result, web, error, Responder};
+use actix_web::{get, post, delete, put, HttpResponse, Result, web, error};
 use serde::de;
 use crate::{service::client_service::ClientService, models::{regular_order, regular_order_line}};
-
 
 #[get("/")]
 async fn get_all_clients(client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
@@ -58,3 +57,19 @@ async fn update_order(path: web::Path<i32>, regular_order: web::Json<regular_ord
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
+
+#[get("/getAllBoxes/{id}/{tourDay}/{date}")]
+pub async fn get_all_boxes_client_tour(
+        client_service: web::Data<ClientService>,
+        path: web::Path<(i32, i32, String)>,
+    ) -> Result<HttpResponse, error::Error> {
+    let (id, tour_day, date) = path.into_inner();
+    let result = client_service.get_all_boxes_client(id, tour_day, date).await.unwrap();
+
+    match result.len() {
+        0 => return Err(error::ErrorNotFound("No boxes found")),
+        _ => Ok(HttpResponse::Ok().json(result))
+        ,
+    }
+}
+

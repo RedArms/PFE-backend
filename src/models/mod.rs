@@ -1,5 +1,9 @@
-pub mod user;
-pub mod item;
+pub mod boxe;
 pub mod client;
+pub mod item;
 pub mod regular_order;
 pub mod regular_order_line;
+pub mod order;
+pub mod tours;
+pub mod tours_day;
+pub mod user;

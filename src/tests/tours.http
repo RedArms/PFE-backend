@@ -1,0 +1,39 @@
+
+http://127.0.0.1:4125/tours/toursToday
+
+###requests 2 
+http://127.0.0.1:4125/tours/2/2023-12-09
+
+###requests 3
+http://localhost:4125/boxes/allBoxes/1
+
+###requests 4
+http://localhost:4125/items/1
+
+###request 5
+POST http://localhost:4125/tours/setDeliverer
+Content-Type: application/json
+
+{
+    "tour": 3,
+    "date": "2023-12-03",
+    "delivery_person": 1
+}
+
+###request 6
+GET http://localhost:4125/tours/getAllNotDelivered
+
+###request 7
+GET http://localhost:4125/tours/1
+
+###request 8
+GET http://localhost:4125/tours/getTours/1/getAllClient
+
+###requests 9
+GET http://localhost:4125/tours/toursday
+
+###requests 10
+GET http://localhost:4125/tours/tours/2023-12-10
+
+###requests 11
+GET http://localhost:4125/tours/tours/2028-12-10

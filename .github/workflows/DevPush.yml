@@ -1,0 +1,45 @@
+name: Push Dev
+
+on:
+  push:
+    branches: [ "develop" ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment: all
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set DATABASE_URL
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+
+      - name: Set PORT
+        run: echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
+
+      - name: Create dev .env file
+        run: echo -e "DATABASE_URL=${{ secrets.DATABASE_URL }}\nPORT=${{ secrets.PORT }}" > .env
+
+      - name: Build the Docker image
+        run: docker build . -t pfe_back:pfe_back_dev
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: redarmsii/pfe_back:pfe_back_dev
+          build-args: |
+            PORT=${{ secrets.PORT_PORT }}
+

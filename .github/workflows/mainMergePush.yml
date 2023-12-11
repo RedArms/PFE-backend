@@ -1,0 +1,47 @@
+name: Merge (PR accepted) to main 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+      branches: ["main"]
+      types: [closed]
+      
+
+jobs:
+  build:
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+
+    environment: all
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Prod DATABASE_URL_PROD
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
+
+      - name: Set Prod PORT
+        run: echo "PORT=${{ secrets.PORT_PROD }}" >> $GITHUB_ENV
+
+      - name: Create Prod .env file
+        run: echo -e "DATABASE_URL=${{ secrets.DATABASE_URL }}\nPORT=${{ secrets.PORT_PROD }}" > .env
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: redarmsii/pfe_back:pfe_back_prod
+          build-args: |
+            PORT=${{ secrets.PORT_PROD }}
+    
