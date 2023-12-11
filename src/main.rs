@@ -34,7 +34,6 @@ use crate::service::client_service::ClientService;
 use crate::service::item_service::ItemService;
 use crate::service::order_service::OrderService;
 use crate::service::user_service::UserService;
-use crate::service::client_service::ClientService;
 
 #[derive(Clone)]
 struct AppState {
