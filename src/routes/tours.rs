@@ -1,8 +1,9 @@
-use crate::{service::{
-    client_service::ClientService,
-    order_service::OrderService,
-    tours_service::ToursService,
-}, models::order};
+use crate::{
+    models::order,
+    service::{
+        client_service::ClientService, order_service::OrderService, tours_service::ToursService,
+    },
+};
 use actix_web::{error, get, post, web, HttpResponse, Result};
 use serde::Deserialize;
 
@@ -44,7 +45,7 @@ async fn get_tours_today(
 
 #[get("/toursday")]
 async fn get_all_tours_day(
-    tours_service: web::Data<ToursService>
+    tours_service: web::Data<ToursService>,
 ) -> Result<HttpResponse, error::Error> {
     println!("oue");
     let tours = tours_service.get_all_tours_day().await;
@@ -57,7 +58,7 @@ async fn get_all_tours_day(
 #[get("/tours/{date}")]
 async fn get_tours_date(
     tours_service: web::Data<ToursService>,
-    path: web::Path<String>
+    path: web::Path<String>,
 ) -> Result<HttpResponse, error::Error> {
     let date = path.into_inner();
     println!("{}", date);

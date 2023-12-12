@@ -1,8 +1,8 @@
 use crate::models::tours::Tours;
 use crate::models::tours_day::ToursDay;
 use actix_web::web;
-use sqlx::Error;
 use chrono::NaiveDate;
+use sqlx::Error;
 
 #[derive(Clone)]
 pub struct ToursRepository {
@@ -61,8 +61,8 @@ impl ToursRepository {
             "SELECT * FROM pfe.tour_days WHERE date = $1",
             current_date
         )
-            .fetch_all(&self.app_state.db_pool)
-            .await?;
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
 
         Ok(tours)
     }
@@ -114,7 +114,8 @@ impl ToursRepository {
         let date = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let tours = sqlx::query_as!(
             ToursDay,
-            "SELECT * FROM pfe.tour_days WHERE date = $1 ",date
+            "SELECT * FROM pfe.tour_days WHERE date = $1 ",
+            date
         )
         .fetch_all(&self.app_state.db_pool)
         .await?;

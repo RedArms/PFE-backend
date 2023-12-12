@@ -11,8 +11,11 @@ pub struct ToursService {
 }
 
 impl ToursService {
-    pub fn new(tours_repo: ToursRepository,order_repo:OrderRepository) -> Self {
-        Self { tours_repo,order_repo}
+    pub fn new(tours_repo: ToursRepository, order_repo: OrderRepository) -> Self {
+        Self {
+            tours_repo,
+            order_repo,
+        }
     }
 
     pub async fn get_all(&self) -> Result<Vec<Tours>, Error> {
@@ -45,9 +48,6 @@ impl ToursService {
     pub async fn get_tours_day_avalaible(&self) -> Result<Vec<ToursDay>, Error> {
         return self.tours_repo.get_tours_day_avalaible().await;
     }
-
-
-
 
     pub async fn get_by_id(&self, id: i32) -> Result<Option<Tours>, Error> {
         return self.tours_repo.get_by_id(id).await;
