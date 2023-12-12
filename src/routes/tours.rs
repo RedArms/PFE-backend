@@ -204,14 +204,32 @@ async fn get_all_client_by_tour(
 #[get("/getTourForDeliverer/{id}")]
 async fn get_tour_for_deliverer(
     tours_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
     path: web::Path<i32>,
 ) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
-    let tour = tours_service.get_tours_for_deliverer(id).await;
-    println!("tour: {:?}", tour);
-    match tour{
-        Ok(None) => Err(error::ErrorNotFound("Tour not found")),
-        Ok(tour ) => Ok(HttpResponse::Ok().json(tour)),
+    let tour_result = tours_service.get_tours_for_deliverer(id).await;
+    if(!tour_result.is_ok()){return Err(error::ErrorNotFound("Tour not found"));}
+        let result: Result<Vec<toursToday_DTO>, _> = match tour_result {
+            Ok(tours) => {
+                let mut result: Vec<toursToday_DTO> = Vec::new();
+                for tour in &tours {
+                    result.push(toursToday_DTO {
+                        tour: tour.tour,
+                        delivery_person: tour.delivery_person,
+                        date: tour.date,
+                        geo_zone : tours_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
+                        clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                    });
+                }
+                Ok(result)
+            }
+            Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+        };
+
+    println!("tour: {:?}", result);
+    match result{
+        Ok(result ) => Ok(HttpResponse::Ok().json(result)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
