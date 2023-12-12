@@ -1,5 +1,6 @@
-use crate::models::item::Item;
+use crate::models::{item::Item, client::Client};
 use actix_web::web;
+use aws_config::imds::client;
 use sqlx::Error;
 
 #[derive(Clone)]
@@ -18,8 +19,8 @@ impl ItemRepository {
             "SELECT item_id, label, size FROM pfe.items WHERE item_id = $1",
             id
         )
-        .fetch_optional(&self.app_state.db_pool)
-        .await?;
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
 
         Ok(item)
     }
@@ -39,8 +40,18 @@ impl ItemRepository {
             item.label,
             item.size
         )
-        .fetch_one(&self.app_state.db_pool)
-        .await?;
+            .fetch_one(&self.app_state.db_pool)
+            .await?;
+
+        let clients: Vec<Client> = sqlx::query_as!(Client, "SELECT client_id, name, address, tour FROM pfe.clients")
+            .fetch_all(&self.app_state.db_pool)
+            .await?;
+
+        for client in clients {
+            sqlx::query!("INSERT INTO pfe.client_lines (client, item, quantity) VALUES ($1, $2, 0)", client.client_id.unwrap(), item.item_id)
+                .execute(&self.app_state.db_pool)
+                .await?;
+        }
 
         Ok(item)
     }
