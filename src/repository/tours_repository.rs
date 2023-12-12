@@ -123,16 +123,19 @@ impl ToursRepository {
         Ok(tours)
     }
 
-    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Vec<ToursDay>, Error> {
+    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Option<ToursDay>, Error> {
         let current_date: chrono::prelude::NaiveDate = chrono::Local::now().naive_local().date();
-        let tours = sqlx::query_as!(
+        let tour = sqlx::query_as!(
             ToursDay,
-            "SELECT * FROM pfe.tour_days WHERE delivery_person = $1 ",
-            deliverer_id
+            "SELECT * FROM pfe.tour_days WHERE delivery_person = $1 AND  date = $2",
+            deliverer_id,
+            current_date
         )
-        .fetch_all(&self.app_state.db_pool)
-        .await?;
+            .fetch_optional(&self.app_state.db_pool)
+            .await?;
 
-        Ok(tours)
+
+
+        Ok(tour)
     }
 }

@@ -201,15 +201,17 @@ async fn get_all_client_by_tour(
     }
 }
 
-#[get("/getToursForDeliverer/{id}")]
-async fn get_tours_for_deliverer(
+#[get("/getTourForDeliverer/{id}")]
+async fn get_tour_for_deliverer(
     tours_service: web::Data<ToursService>,
     path: web::Path<i32>,
 ) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
-    let tours = tours_service.get_tours_for_deliverer(id).await;
-    match tours {
-        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+    let tour = tours_service.get_tours_for_deliverer(id).await;
+    println!("tour: {:?}", tour);
+    match tour{
+        Ok(None) => Err(error::ErrorNotFound("Tour not found")),
+        Ok(tour ) => Ok(HttpResponse::Ok().json(tour)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }

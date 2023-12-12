@@ -59,7 +59,7 @@ impl ToursService {
         return self.tours_repo.get_tours_by_delivery_day(date).await;
     }
 
-    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Vec<ToursDay>, Error> {
+    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Option<ToursDay>, Error> {
         return self.tours_repo.get_tours_for_deliverer(deliverer_id).await;
     }
 }
