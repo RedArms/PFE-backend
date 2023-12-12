@@ -215,3 +215,17 @@ async fn get_tour_for_deliverer(
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
+
+#[get("/getQuantityLeft/{date}/{tour}")]
+async fn get_quantity_left(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<(String, i32)>,
+) -> Result<HttpResponse, error::Error> {
+    let (date, tour) = path.into_inner();
+    println!("ok");
+    let tour_quantity_left = tours_service.get_quatity_left(date,tour).await.unwrap();
+    match tour_quantity_left.len() {
+        0 => Err(error::ErrorNotFound("Tour not found")),
+        _ =>  Ok(HttpResponse::Ok().json(tour_quantity_left)),
+    }
+}

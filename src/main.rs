@@ -26,7 +26,7 @@ use routes::items::{get_item, get_items, create_item};
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
     get_tour_by_id, get_tours_by_delivery_day, get_tours_date, get_tours_deliverer_day,
-    get_tours_today, set_deliverer,get_tour_for_deliverer
+    get_tours_today, set_deliverer,get_tour_for_deliverer,get_quantity_left
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
 
@@ -168,6 +168,7 @@ async fn main() -> std::io::Result<()> {
             .service(create_item);
         let tour_route = actix_web::web::scope("/tours")
             .service(get_tour_for_deliverer)
+            .service(get_quantity_left)
             .service(get_all_client_by_tour)
             .service(get_all_tours_day)
             .service(get_tours_date)
