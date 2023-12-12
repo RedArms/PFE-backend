@@ -16,7 +16,7 @@ use std::env;
 use routes::auth::{login_user, register_user};
 use routes::boxe::get_all_boxes;
 use routes::index::{hello, helloworld};
-use routes::client::{get_all_clients, add_client, delete_client, get_order, update_order};
+use routes::client::{get_all_clients, add_client, update_client, delete_client, get_order, update_order};
 use routes::items::{get_item, get_items, create_item};
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_tour_by_id,
@@ -100,6 +100,7 @@ async fn main() -> std::io::Result<()> {
         let client_route = actix_web::web::scope("/client")
             .service(get_all_clients)
             .service(add_client)
+            .service(update_client)
             .service(delete_client)
             .service(get_order)
             .service(update_order);
