@@ -9,6 +9,7 @@ pub async fn get_all_boxes(
     item_service: web::Data<ItemService>,
     id: web::Path<i32>,
 ) -> Result<HttpResponse, error::Error> {
+
     let boxes = boxe_service.get_all_boxes(id.into_inner()).await.unwrap();
     let mut result: Vec<Boxe_DTO> = Vec::new();
     for boxe in &boxes {

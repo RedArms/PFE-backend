@@ -8,6 +8,16 @@ use actix_web::{error, get, post, web, HttpResponse, Result};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct toursToday_DTO{
+    pub tour: i32,
+    pub delivery_person: Option<i32>,
+    pub date: NaiveDate,
+    pub geo_zone: String,
+    pub clients : Vec<Client>,
+}
+
 #[get("/")]
 async fn get_all_tours(
     tours_service: web::Data<ToursService>,
@@ -33,13 +43,7 @@ async fn get_tour_by_id(
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct toursToday_DTO{
-    pub tour: i32,
-    pub delivery_person: Option<i32>,
-    pub date: NaiveDate,
-    pub clients : Vec<Client>,
-}
+
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
@@ -55,6 +59,7 @@ async fn get_tours_today(
                     tour: tour.tour,
                     delivery_person: tour.delivery_person,
                     date: tour.date,
+                    geo_zone : tours_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
                     clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
                 });
             }
@@ -169,6 +174,7 @@ async fn get_all_not_delivered(
                     tour: tour.tour,
                     delivery_person: tour.delivery_person,
                     date: tour.date,
+                    geo_zone : tour_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
                     clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
                 });
             }
@@ -191,6 +197,19 @@ async fn get_all_client_by_tour(
     let tour = client_service.get_all_client_by_tour(id).await;
     match tour {
         Ok(tour) => Ok(HttpResponse::Ok().json(tour)),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
+#[get("/getToursForDeliverer/{id}")]
+async fn get_tours_for_deliverer(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+    let tours = tours_service.get_tours_for_deliverer(id).await;
+    match tours {
+        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }

@@ -74,7 +74,7 @@ async fn update_order(path: web::Path<i32>, regular_order: web::Json<RegularOrde
     }
 }
 
-#[get("/getAllBoxes/{id}/{tourDay}/{date}")]
+#[get("/getAllBoxes//{id}{tourDay}/{date}")]
 pub async fn get_all_boxes_client_tour(
     client_service: web::Data<ClientService>,
     item_service: web::Data<ItemService>,
