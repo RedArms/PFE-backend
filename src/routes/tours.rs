@@ -200,7 +200,6 @@ async fn get_all_client_by_tour(
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
     }
 }
-
 #[get("/getTourForDeliverer/{id}")]
 async fn get_tour_for_deliverer(
     tours_service: web::Data<ToursService>,
@@ -208,31 +207,27 @@ async fn get_tour_for_deliverer(
     path: web::Path<i32>,
 ) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
-    let tour_result = tours_service.get_tours_for_deliverer(id).await;
-    if(!tour_result.is_ok()){return Err(error::ErrorNotFound("Tour not found"));}
-        let result: Result<Vec<toursToday_DTO>, _> = match tour_result {
-            Ok(tours) => {
-                let mut result: Vec<toursToday_DTO> = Vec::new();
-                for tour in &tours {
-                    result.push(toursToday_DTO {
-                        tour: tour.tour,
-                        delivery_person: tour.delivery_person,
-                        date: tour.date,
-                        geo_zone : tours_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
-                        clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
-                    });
-                }
-                Ok(result)
-            }
-            Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
-        };
+    let tour_result = tours_service.get_tours_for_deliverer(id).await.unwrap();
+
+    if tour_result.is_none() {
+        return Err(error::ErrorNotFound("Tour not found"));
+    }
+
+    let tour_result = tour_result.unwrap(); // Now we can safely unwrap
+
+    let result = toursToday_DTO {
+        tour: tour_result.tour,
+        delivery_person: tour_result.delivery_person,
+        date: tour_result.date,
+        geo_zone: tours_service.get_by_id(tour_result.tour).await.unwrap().unwrap().geo_zone,
+        clients: client_service.get_all_client_by_tour(tour_result.tour).await.unwrap(),
+    };
 
     println!("tour: {:?}", result);
-    match result{
-        Ok(result ) => Ok(HttpResponse::Ok().json(result)),
-        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
-    }
+    Ok(HttpResponse::Ok().json(result))
 }
+
+
 
 #[get("/getQuantityLeft/{date}/{tour}")]
 async fn get_quantity_left(
