@@ -24,6 +24,18 @@ async fn add_client(client: web::Json<Client>, client_service: web::Data<ClientS
     }
 }
 
+#[put("/{id}")]
+async fn update_client(path: web::Path<i32>, client: web::Json<Client>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+
+    let result = client_service.update_client(id, client.into_inner()).await;
+
+    match result {
+        Ok(_) => Ok(HttpResponse::Ok().finish()),
+        Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+
 #[delete("/{id}")]
 async fn delete_client(path: web::Path<i32>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
