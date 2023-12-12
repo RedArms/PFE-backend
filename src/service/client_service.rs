@@ -33,6 +33,10 @@ impl ClientService {
     pub async fn add_client(&self, client: Client) -> Result<Client, Error> {
         self.client_repo.add_client(client).await
     }
+
+    pub async fn update_client(&self, id: i32, client: Client) -> Result<(), Error> {
+        self.client_repo.update_client(id, client).await
+    }
     
     pub async fn get_order(&self, id: i32) -> Result<RegularOrder, Error> {
         self.client_repo.get_order(id).await

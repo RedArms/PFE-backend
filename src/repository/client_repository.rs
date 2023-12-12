@@ -43,6 +43,14 @@ impl ClientRepository {
         Ok(client)
     }
 
+    pub async fn update_client(&self, id: i32, client: Client) -> Result<(), Error> {
+        sqlx::query!("UPDATE pfe.clients SET name = $1, address = $2, tour = $3 WHERE client_id = $4", client.name, client.address, client.tour, id)
+            .execute(&self.app_state.db_pool)
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn get_order(&self, id: i32) -> Result<RegularOrder, Error> {
         let regular_order = sqlx::query_as!(RegularOrderLine, "SELECT i.item_id, i.label, i.size, cl.quantity FROM pfe.client_lines cl JOIN pfe.items i ON cl.item = i.item_id WHERE cl.client = $1", id)
             .fetch_all(&self.app_state.db_pool)
