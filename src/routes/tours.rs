@@ -1,11 +1,12 @@
 use crate::{
-    models::order,
+    models::{client::Client},
     service::{
         client_service::ClientService, order_service::OrderService, tours_service::ToursService,
     },
 };
 use actix_web::{error, get, post, web, HttpResponse, Result};
-use serde::Deserialize;
+use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
 
 #[get("/")]
 async fn get_all_tours(
@@ -32,15 +33,41 @@ async fn get_tour_by_id(
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct toursToday_DTO{
+    pub tour: i32,
+    pub delivery_person: Option<i32>,
+    pub date: NaiveDate,
+    pub clients : Vec<Client>,
+}
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
 ) -> Result<HttpResponse, error::Error> {
-    let tours = tours_service.get_tours_today().await;
-    match tours {
-        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+    let tours_result = tours_service.get_tours_today().await;
+
+    let result: Result<Vec<toursToday_DTO>, _> = match tours_result {
+        Ok(tours) => {
+            let mut result: Vec<toursToday_DTO> = Vec::new();
+            for tour in &tours {
+                result.push(toursToday_DTO {
+                    tour: tour.tour,
+                    delivery_person: tour.delivery_person,
+                    date: tour.date,
+                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                });
+            }
+            Ok(result)
+        }
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    };
+    match result {
+        Ok(result) => Ok(HttpResponse::Ok().json(result)),
+        Err(err) => Err(err),
     }
+
+
 }
 
 #[get("/toursday")]
@@ -130,11 +157,28 @@ async fn get_tours_by_delivery_day(
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(
     tour_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
 ) -> Result<HttpResponse, error::Error> {
     let tours_day = tour_service.get_tours_day_avalaible().await;
-    match tours_day {
-        Ok(orders) => Ok(HttpResponse::Ok().json(orders)),
+
+    let result: Result<Vec<toursToday_DTO>, _> = match tours_day {
+        Ok(tours) => {
+            let mut result: Vec<toursToday_DTO> = Vec::new();
+            for tour in &tours {
+                result.push(toursToday_DTO {
+                    tour: tour.tour,
+                    delivery_person: tour.delivery_person,
+                    date: tour.date,
+                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                });
+            }
+            Ok(result)
+        }
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    };
+    match result {
+        Ok(result) => Ok(HttpResponse::Ok().json(result)),
+        Err(err) => Err(err),
     }
 }
 

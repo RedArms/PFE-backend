@@ -9,6 +9,15 @@ pub struct Boxe {
     pub box_status: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Boxe_DTO{
+    pub order_id: i32,
+    pub name: String,
+    pub size: Option<String>,
+    pub delivered_qty: i32,
+    pub quantity: i32,
+    pub box_status: Option<String>,
+}
 impl Boxe {
     pub fn new(
         order_id: i32,
@@ -23,6 +32,26 @@ impl Boxe {
             quantity,
             delivered_qty,
             box_status: box_status.map(|s| s.to_string()),
+        }
+    }
+}
+
+impl Boxe_DTO {
+    pub fn new(
+        order_id: i32,
+        name: String,
+        size: Option<String>,
+        delivered_qty: i32,
+        quantity: i32,
+        box_status: Option<String>,
+    ) -> Self {
+        Boxe_DTO {
+            order_id,
+            name,
+            size,
+            delivered_qty,
+            quantity,
+            box_status,
         }
     }
 }

@@ -21,7 +21,7 @@ use std::time::Duration as StdDuration;
 use routes::auth::{login_user, register_user};
 use routes::boxe::get_all_boxes;
 use routes::index::{hello, helloworld};
-use routes::client::{get_all_clients, add_client, update_client, delete_client, get_order, update_order};
+use routes::clients::{get_all_clients, add_client, update_client, delete_client, get_order, update_order};
 use routes::items::{get_item, get_items, create_item};
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
@@ -29,11 +29,13 @@ use routes::tours::{
     get_tours_today, set_deliverer,
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
+
 use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::client_repository::ClientRepository;
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::order_repository::OrderRepository;
 use crate::repository::user_repository::UserRepository;
+use crate::routes::clients::get_all_boxes_client_tour;
 use crate::service::boxe_service::BoxeService;
 use crate::service::client_service::ClientService;
 use crate::service::item_service::ItemService;
@@ -152,13 +154,14 @@ async fn main() -> std::io::Result<()> {
             .service(revoke_user)
             .service(set_admin);
 
-        let client_route = actix_web::web::scope("/client")
+        let client_route = actix_web::web::scope("/clients")
             .service(get_all_clients)
             .service(add_client)
             .service(update_client)
             .service(delete_client)
             .service(get_order)
-            .service(update_order);
+            .service(update_order)
+            .service(get_all_boxes_client_tour);
         let item_route = actix_web::web::scope("/items")
             .service(get_item)
             .service(get_items)
