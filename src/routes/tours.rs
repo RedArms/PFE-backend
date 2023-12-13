@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 pub fn configure_routes(cfg: &mut web::ServiceConfig) {
     let tour_route = web::scope("/tours")
-        .service(set_order_delivered)
         .service(get_tour_for_deliverer)
         .service(get_quantity_left)
         .service(get_all_client_by_tour)
@@ -279,12 +278,3 @@ async fn get_quantity_left(
     }
 }
 
-#[put("/setOrderDelivred/{idOrder}")]
-async fn set_order_delivered (
-    order_service: web::Data<OrderService>,
-    path : web::Path<(i32)>
-) -> Result<HttpResponse,error::Error>{
-    let id = path.into_inner();
-    order_service.set_delivered(id).await.unwrap();
-    Ok(HttpResponse::from(HttpResponse::Ok()))
-}

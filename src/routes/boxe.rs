@@ -3,6 +3,7 @@ use crate::service::boxe_service::BoxeService;
 use crate::service::item_service::ItemService;
 use actix_web::{error, get, put, web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
+use crate::service::order_service::OrderService;
 
 pub fn configure_routes(cfg: &mut web::ServiceConfig) {
     let boxe_route = web::scope("/boxes")
@@ -46,13 +47,13 @@ pub struct Boxe_Update_DTO {
 #[put("/updateBox/{idOrder}")]
 pub async fn update_box(
     boxe_service: web::Data<BoxeService>,
+    order_service : web::Data<OrderService>,
     idOrder: web::Path<i32>,
     boxes: web::Json<Vec<Boxe_Update_DTO>>,
 ) -> Result<HttpResponse, error::Error> {
-    println!("test 1");
     let id = idOrder.into_inner();
     let result = boxe_service.update_box(id, boxes.into_inner()).await;
-    println!("test 23");
+    order_service.set_delivered(id).await.unwrap();
 
     match result {
         Ok(_) => Ok(HttpResponse::Ok().finish()),
