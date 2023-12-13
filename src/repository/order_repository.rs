@@ -55,4 +55,15 @@ impl OrderRepository {
 
         Ok(orders.rows_affected())
     }
+
+    pub async fn set_delivered(&self, id: i32) -> Result<(), Error> {
+        sqlx::query!(
+            "UPDATE pfe.orders SET status = 'livre' WHERE order_id = $1",
+            id
+        )
+        .execute(&self.app_state.db_pool)
+        .await?;
+
+        Ok(())
+    }
 }
