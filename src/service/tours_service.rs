@@ -1,6 +1,6 @@
+use crate::models::quantity_left_model::QuantityLeftModel;
 use crate::models::tours::Tours;
 use crate::models::tours_day::ToursDay;
-use crate::models::quantity_left_model::QuantityLeftModel;
 use crate::repository::order_repository::OrderRepository;
 use crate::repository::tours_repository::ToursRepository;
 use sqlx::Error;
@@ -60,11 +60,18 @@ impl ToursService {
         return self.tours_repo.get_tours_by_delivery_day(date).await;
     }
 
-    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Option<ToursDay>, Error> {
+    pub async fn get_tours_for_deliverer(
+        &self,
+        deliverer_id: i32,
+    ) -> Result<Option<ToursDay>, Error> {
         return self.tours_repo.get_tours_for_deliverer(deliverer_id).await;
     }
 
-    pub async fn get_quatity_left(&self, date: String,tour : i32) -> Result<Vec<QuantityLeftModel>, Error> {
-        return self.tours_repo.get_quatity_left(date,tour).await;
+    pub async fn get_quatity_left(
+        &self,
+        date: String,
+        tour: i32,
+    ) -> Result<Vec<QuantityLeftModel>, Error> {
+        return self.tours_repo.get_quatity_left(date, tour).await;
     }
 }

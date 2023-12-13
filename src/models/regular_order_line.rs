@@ -1,11 +1,11 @@
-use serde::{Serialize, Deserialize};
 use crate::models::item::Item;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct RegularOrderLine {
     pub item_id: i32,
     pub label: String,
-    pub size : Option<String>,
+    pub size: Option<String>,
     pub quantity: i32,
 }
 
@@ -19,4 +19,3 @@ impl RegularOrderLine {
         }
     }
 }
-    

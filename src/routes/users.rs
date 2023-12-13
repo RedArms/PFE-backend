@@ -1,6 +1,17 @@
 use crate::service::user_service::UserService;
 use actix_web::{delete, error, get, post, web, HttpResponse, Result};
 
+pub fn configure_routes(cfg: &mut web::ServiceConfig) {
+    let user_route = actix_web::web::scope("/users")
+        .service(get_user)
+        .service(get_all_users)
+        .service(verify_user)
+        .service(revoke_user)
+        .service(set_admin);
+
+    cfg.service(user_route);
+}
+
 #[get("/{id}")]
 async fn get_user(
     path: web::Path<i32>,

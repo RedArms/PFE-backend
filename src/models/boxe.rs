@@ -10,7 +10,7 @@ pub struct Boxe {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Boxe_DTO{
+pub struct Boxe_DTO {
     pub order_id: i32,
     pub name: String,
     pub size: Option<String>,

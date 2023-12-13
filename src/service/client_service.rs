@@ -1,8 +1,8 @@
-use crate::models::regular_order::RegularOrder;
-use crate::repository::client_repository::ClientRepository;
 use crate::models::boxe::Boxe;
 use crate::models::client::Client;
+use crate::models::regular_order::RegularOrder;
 use crate::repository::boxe_repository::BoxeRepository;
+use crate::repository::client_repository::ClientRepository;
 use crate::repository::order_repository::OrderRepository;
 use sqlx::Error;
 
@@ -37,7 +37,7 @@ impl ClientService {
     pub async fn update_client(&self, id: i32, client: Client) -> Result<(), Error> {
         self.client_repo.update_client(id, client).await
     }
-    
+
     pub async fn get_order(&self, id: i32) -> Result<RegularOrder, Error> {
         self.client_repo.get_order(id).await
     }
