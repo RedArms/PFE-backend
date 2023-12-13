@@ -19,28 +19,13 @@ use sqlx::{postgres::PgPool, Error};
 use std::env;
 use std::thread;
 use std::time::Duration as StdDuration;
-
-// Import functions for each route
-use routes::auth::{login_user, register_user};
-use routes::boxe::get_all_boxes;
-use routes::clients::{
-    add_client, delete_client, get_all_clients, get_order, update_client, update_order,
-};
-use routes::index::{hello, helloworld};
-use routes::items::{create_item, get_item, get_items};
-use routes::tours::{
-    get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
-    get_quantity_left, get_tour_by_id, get_tour_for_deliverer, get_tours_by_delivery_day,
-    get_tours_date, get_tours_deliverer_day, get_tours_today, set_deliverer,
-};
-use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
+use configuration::BD_conf::init_db_pool;
 
 use crate::repository::boxe_repository::BoxeRepository;
 use crate::repository::client_repository::ClientRepository;
 use crate::repository::item_repository::ItemRepository;
 use crate::repository::order_repository::OrderRepository;
 use crate::repository::user_repository::UserRepository;
-use crate::routes::clients::get_all_boxes_client_tour;
 use crate::service::boxe_service::BoxeService;
 use crate::service::client_service::ClientService;
 use crate::service::item_service::ItemService;
@@ -52,15 +37,7 @@ struct AppState {
     db_pool: PgPool,
 }
 
-async fn init_db_pool() -> Result<PgPool, Error> {
-    dotenv().ok();
 
-    // Retrieve the database URL from the environment variables
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not found in .env");
-
-    // Connect to the database
-    PgPool::connect(&database_url).await
-}
 
 async fn create_tour_day(db_pool: &PgPool) -> Result<(), sqlx::Error> {
     // Get the current date

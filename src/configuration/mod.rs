@@ -1,2 +1,2 @@
 pub mod route_configuration;
-mod BD_conf;
+pub mod BD_conf;
