@@ -21,4 +21,7 @@ impl OrderService {
             .get_orders_from_date_and_tour(date, tour)
             .await
     }
+    pub async fn set_delivered(&self, id: i32) -> Result<(), Error> {
+        self.order_repo.set_delivered(id).await
+    }
 }
