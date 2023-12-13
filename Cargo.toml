@@ -26,3 +26,7 @@ dotenv = "0.15.0"
 bcrypt = "0.15"
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.3"
+time = { version = "0.3.30", features = [] }
+
+[dev-dependencies]
+cargo-udeps = "0.1.21"
