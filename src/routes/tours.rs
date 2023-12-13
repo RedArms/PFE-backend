@@ -1,11 +1,22 @@
 use crate::{
-    models::order,
+    models::{client::Client},
     service::{
         client_service::ClientService, order_service::OrderService, tours_service::ToursService,
     },
 };
 use actix_web::{error, get, post, web, HttpResponse, Result};
-use serde::Deserialize;
+use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct toursToday_DTO{
+    pub tour: i32,
+    pub delivery_person: Option<i32>,
+    pub date: NaiveDate,
+    pub geo_zone: String,
+    pub clients : Vec<Client>,
+}
 
 #[get("/")]
 async fn get_all_tours(
@@ -32,15 +43,36 @@ async fn get_tour_by_id(
     }
 }
 
+
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
 ) -> Result<HttpResponse, error::Error> {
-    let tours = tours_service.get_tours_today().await;
-    match tours {
-        Ok(tours) => Ok(HttpResponse::Ok().json(tours)),
+    let tours_result = tours_service.get_tours_today().await;
+
+    let result: Result<Vec<toursToday_DTO>, _> = match tours_result {
+        Ok(tours) => {
+            let mut result: Vec<toursToday_DTO> = Vec::new();
+            for tour in &tours {
+                result.push(toursToday_DTO {
+                    tour: tour.tour,
+                    delivery_person: tour.delivery_person,
+                    date: tour.date,
+                    geo_zone : tours_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
+                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                });
+            }
+            Ok(result)
+        }
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    };
+    match result {
+        Ok(result) => Ok(HttpResponse::Ok().json(result)),
+        Err(err) => Err(err),
     }
+
+
 }
 
 #[get("/toursday")]
@@ -130,11 +162,29 @@ async fn get_tours_by_delivery_day(
 #[get("/getAllNotDelivered")]
 async fn get_all_not_delivered(
     tour_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
 ) -> Result<HttpResponse, error::Error> {
     let tours_day = tour_service.get_tours_day_avalaible().await;
-    match tours_day {
-        Ok(orders) => Ok(HttpResponse::Ok().json(orders)),
+
+    let result: Result<Vec<toursToday_DTO>, _> = match tours_day {
+        Ok(tours) => {
+            let mut result: Vec<toursToday_DTO> = Vec::new();
+            for tour in &tours {
+                result.push(toursToday_DTO {
+                    tour: tour.tour,
+                    delivery_person: tour.delivery_person,
+                    date: tour.date,
+                    geo_zone : tour_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
+                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                });
+            }
+            Ok(result)
+        }
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    };
+    match result {
+        Ok(result) => Ok(HttpResponse::Ok().json(result)),
+        Err(err) => Err(err),
     }
 }
 
@@ -148,5 +198,47 @@ async fn get_all_client_by_tour(
     match tour {
         Ok(tour) => Ok(HttpResponse::Ok().json(tour)),
         Err(_) => Err(error::ErrorInternalServerError("Internal Server Error")),
+    }
+}
+#[get("/getTourForDeliverer/{id}")]
+async fn get_tour_for_deliverer(
+    tours_service: web::Data<ToursService>,
+    client_service: web::Data<ClientService>,
+    path: web::Path<i32>,
+) -> Result<HttpResponse, error::Error> {
+    let id = path.into_inner();
+    let tour_result = tours_service.get_tours_for_deliverer(id).await.unwrap();
+
+    if tour_result.is_none() {
+        return Err(error::ErrorNotFound("Tour not found"));
+    }
+
+    let tour_result = tour_result.unwrap(); // Now we can safely unwrap
+
+    let result = toursToday_DTO {
+        tour: tour_result.tour,
+        delivery_person: tour_result.delivery_person,
+        date: tour_result.date,
+        geo_zone: tours_service.get_by_id(tour_result.tour).await.unwrap().unwrap().geo_zone,
+        clients: client_service.get_all_client_by_tour(tour_result.tour).await.unwrap(),
+    };
+
+    println!("tour: {:?}", result);
+    Ok(HttpResponse::Ok().json(result))
+}
+
+
+
+#[get("/getQuantityLeft/{date}/{tour}")]
+async fn get_quantity_left(
+    tours_service: web::Data<ToursService>,
+    path: web::Path<(String, i32)>,
+) -> Result<HttpResponse, error::Error> {
+    let (date, tour) = path.into_inner();
+    println!("ok");
+    let tour_quantity_left = tours_service.get_quatity_left(date,tour).await.unwrap();
+    match tour_quantity_left.len() {
+        0 => Err(error::ErrorNotFound("Tour not found")),
+        _ =>  Ok(HttpResponse::Ok().json(tour_quantity_left)),
     }
 }
