@@ -11,7 +11,13 @@ pub struct QuantityLeftModel {
 }
 
 impl QuantityLeftModel {
-    pub fn new(tour: i32, date: NaiveDate, label: String, size: Option<String>, quantity:  Option<i64>) -> Self {
+    pub fn new(
+        tour: i32,
+        date: NaiveDate,
+        label: String,
+        size: Option<String>,
+        quantity: Option<i64>,
+    ) -> Self {
         Self {
             tour,
             date,

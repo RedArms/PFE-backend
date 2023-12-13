@@ -1,5 +1,5 @@
 use crate::{
-    models::{client::Client},
+    models::client::Client,
     service::{
         client_service::ClientService, order_service::OrderService, tours_service::ToursService,
     },
@@ -8,14 +8,30 @@ use actix_web::{error, get, post, web, HttpResponse, Result};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
+pub fn configure_routes(cfg: &mut web::ServiceConfig) {
+    let tour_route = actix_web::web::scope("/tours")
+        .service(get_tour_for_deliverer)
+        .service(get_quantity_left)
+        .service(get_all_client_by_tour)
+        .service(get_all_tours_day)
+        .service(get_tours_date)
+        .service(get_tours_by_delivery_day)
+        .service(get_all_tours)
+        .service(get_tours_today)
+        .service(get_all_not_delivered)
+        .service(get_tours_deliverer_day)
+        .service(set_deliverer)
+        .service(get_tour_by_id);
 
+    cfg.service(tour_route);
+}
 #[derive(Debug, Serialize, Deserialize)]
-pub struct toursToday_DTO{
+pub struct toursToday_DTO {
     pub tour: i32,
     pub delivery_person: Option<i32>,
     pub date: NaiveDate,
     pub geo_zone: String,
-    pub clients : Vec<Client>,
+    pub clients: Vec<Client>,
 }
 
 #[get("/")]
@@ -43,7 +59,6 @@ async fn get_tour_by_id(
     }
 }
 
-
 #[get("/toursToday")]
 async fn get_tours_today(
     tours_service: web::Data<ToursService>,
@@ -59,8 +74,16 @@ async fn get_tours_today(
                     tour: tour.tour,
                     delivery_person: tour.delivery_person,
                     date: tour.date,
-                    geo_zone : tours_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
-                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                    geo_zone: tours_service
+                        .get_by_id(tour.tour)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .geo_zone,
+                    clients: client_service
+                        .get_all_client_by_tour(tour.tour)
+                        .await
+                        .unwrap(),
                 });
             }
             Ok(result)
@@ -71,8 +94,6 @@ async fn get_tours_today(
         Ok(result) => Ok(HttpResponse::Ok().json(result)),
         Err(err) => Err(err),
     }
-
-
 }
 
 #[get("/toursday")]
@@ -174,8 +195,16 @@ async fn get_all_not_delivered(
                     tour: tour.tour,
                     delivery_person: tour.delivery_person,
                     date: tour.date,
-                    geo_zone : tour_service.get_by_id(tour.tour).await.unwrap().unwrap().geo_zone,
-                    clients: client_service.get_all_client_by_tour(tour.tour).await.unwrap(),
+                    geo_zone: tour_service
+                        .get_by_id(tour.tour)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .geo_zone,
+                    clients: client_service
+                        .get_all_client_by_tour(tour.tour)
+                        .await
+                        .unwrap(),
                 });
             }
             Ok(result)
@@ -219,15 +248,21 @@ async fn get_tour_for_deliverer(
         tour: tour_result.tour,
         delivery_person: tour_result.delivery_person,
         date: tour_result.date,
-        geo_zone: tours_service.get_by_id(tour_result.tour).await.unwrap().unwrap().geo_zone,
-        clients: client_service.get_all_client_by_tour(tour_result.tour).await.unwrap(),
+        geo_zone: tours_service
+            .get_by_id(tour_result.tour)
+            .await
+            .unwrap()
+            .unwrap()
+            .geo_zone,
+        clients: client_service
+            .get_all_client_by_tour(tour_result.tour)
+            .await
+            .unwrap(),
     };
 
     println!("tour: {:?}", result);
     Ok(HttpResponse::Ok().json(result))
 }
-
-
 
 #[get("/getQuantityLeft/{date}/{tour}")]
 async fn get_quantity_left(
@@ -236,9 +271,9 @@ async fn get_quantity_left(
 ) -> Result<HttpResponse, error::Error> {
     let (date, tour) = path.into_inner();
     println!("ok");
-    let tour_quantity_left = tours_service.get_quatity_left(date,tour).await.unwrap();
+    let tour_quantity_left = tours_service.get_quatity_left(date, tour).await.unwrap();
     match tour_quantity_left.len() {
         0 => Err(error::ErrorNotFound("Tour not found")),
-        _ =>  Ok(HttpResponse::Ok().json(tour_quantity_left)),
+        _ => Ok(HttpResponse::Ok().json(tour_quantity_left)),
     }
 }

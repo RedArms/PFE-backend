@@ -1,0 +1,42 @@
+@base_url = http://localhost:4125
+
+### recupere tous les items
+PUT {{base_url}}/boxes/updateBox/1
+Content-Type: application/json
+
+[
+  {
+    "order_id": 1,
+    "item": 1,
+    "delivered_qty": 2
+  },
+  {
+    "order_id": 1,
+    "item": 2,
+    "delivered_qty": 3
+  }
+]
+
+
+
+### recupere tous les items
+PUT {{base_url}}/boxes/updateBox/9
+Content-Type: application/json
+
+[
+  {
+    "order_id": 9,
+    "item": 1,
+    "delivered_qty": 3
+  },
+  {
+    "order_id": 9,
+    "item": 2,
+    "delivered_qty": 2
+  },
+  {
+    "order_id": 9,
+    "item": 3,
+    "delivered_qty": 1
+  }
+]

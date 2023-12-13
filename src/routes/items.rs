@@ -1,6 +1,15 @@
 use crate::{models::item::Item, service::item_service::ItemService};
 use actix_web::{error, get, post, web, HttpResponse, Responder, Result};
 
+pub fn configure_routes(cfg: &mut web::ServiceConfig) {
+    let item_route = actix_web::web::scope("/items")
+        .service(get_item)
+        .service(get_items)
+        .service(create_item);
+
+    cfg.service(item_route);
+}
+
 /**
  * Get an item by id
  * returns the item and status 200 if found or status 404 if not found

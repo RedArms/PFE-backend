@@ -1,13 +1,28 @@
-use actix_web::{get, post, delete, put, HttpResponse, Result, web, error};
-use serde::de;
-use crate::service::client_service::ClientService;
-use crate::models::regular_order::RegularOrder;
-use crate::models::client::Client;
 use crate::models::boxe::Boxe_DTO;
+use crate::models::client::Client;
+use crate::models::regular_order::RegularOrder;
+use crate::service::client_service::ClientService;
 use crate::service::item_service::ItemService;
+use actix_web::{delete, error, get, post, put, web, HttpResponse, Result};
+use serde::de;
+
+pub fn configure_routes(cfg: &mut web::ServiceConfig) {
+    let client_route = web::scope("/clients")
+        .service(get_all_clients)
+        .service(add_client)
+        .service(update_client)
+        .service(delete_client)
+        .service(get_order)
+        .service(update_order)
+        .service(get_all_boxes_client_tour);
+
+    cfg.service(client_route);
+}
 
 #[get("/")]
-async fn get_all_clients(client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn get_all_clients(
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let client_result = client_service.get_all_clients().await;
 
     match client_result {
@@ -17,7 +32,10 @@ async fn get_all_clients(client_service: web::Data<ClientService>) -> Result<Htt
 }
 
 #[post("/")]
-async fn add_client(client: web::Json<Client>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn add_client(
+    client: web::Json<Client>,
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let client_result = client_service.add_client(client.into_inner()).await;
 
     match client_result {
@@ -27,7 +45,11 @@ async fn add_client(client: web::Json<Client>, client_service: web::Data<ClientS
 }
 
 #[put("/{id}")]
-async fn update_client(path: web::Path<i32>, client: web::Json<Client>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn update_client(
+    path: web::Path<i32>,
+    client: web::Json<Client>,
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
     let result = client_service.update_client(id, client.into_inner()).await;
@@ -39,7 +61,10 @@ async fn update_client(path: web::Path<i32>, client: web::Json<Client>, client_s
 }
 
 #[delete("/{id}")]
-async fn delete_client(path: web::Path<i32>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn delete_client(
+    path: web::Path<i32>,
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
     let result = client_service.delete_client(id).await;
@@ -51,7 +76,10 @@ async fn delete_client(path: web::Path<i32>, client_service: web::Data<ClientSer
 }
 
 #[get("/orders/{id}")]
-async fn get_order(path: web::Path<i32>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn get_order(
+    path: web::Path<i32>,
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
     let regular_order = client_service.get_order(id).await;
@@ -63,10 +91,16 @@ async fn get_order(path: web::Path<i32>, client_service: web::Data<ClientService
 }
 
 #[put("/orders/{id}")]
-async fn update_order(path: web::Path<i32>, regular_order: web::Json<RegularOrder>, client_service: web::Data<ClientService>) -> Result<HttpResponse, error::Error> {
+async fn update_order(
+    path: web::Path<i32>,
+    regular_order: web::Json<RegularOrder>,
+    client_service: web::Data<ClientService>,
+) -> Result<HttpResponse, error::Error> {
     let id = path.into_inner();
 
-    let result = client_service.update_order(id, regular_order.into_inner()).await;
+    let result = client_service
+        .update_order(id, regular_order.into_inner())
+        .await;
 
     match result {
         Ok(_) => Ok(HttpResponse::Ok().finish()),
@@ -82,14 +116,17 @@ pub async fn get_all_boxes_client_tour(
 ) -> Result<HttpResponse, error::Error> {
     println!("get_all_boxes_client_tour");
     let (id, tour_day, date) = path.into_inner();
-    let boxes = client_service.get_all_boxes_client(id, tour_day, date).await.unwrap();
+    let boxes = client_service
+        .get_all_boxes_client(id, tour_day, date)
+        .await
+        .unwrap();
     let mut result: Vec<Boxe_DTO> = Vec::new();
 
     for boxe in &boxes {
         let item_info = item_service.get_item(boxe.item).await.unwrap().unwrap();
         result.push(Boxe_DTO {
             order_id: boxe.order_id,
-            name : item_info.label,
+            name: item_info.label,
             size: item_info.size,
             delivered_qty: boxe.delivered_qty,
             quantity: boxe.quantity,
@@ -101,5 +138,3 @@ pub async fn get_all_boxes_client_tour(
         _ => Ok(HttpResponse::Ok().json(result)),
     }
 }
-
-

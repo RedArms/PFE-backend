@@ -1,8 +1,11 @@
+mod configuration;
 mod models;
 mod repository;
 mod routes;
 mod service;
 mod tests;
+
+use crate::configuration::route_configuration::configure_routes;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
@@ -10,8 +13,8 @@ use chrono::{Datelike, Duration, Local, Utc};
 use dotenv::dotenv;
 use repository::tours_repository::ToursRepository;
 use service::tours_service::ToursService;
-use sqlx::{postgres::PgPool, Error};
 use sqlx::error::Error as SqlxError;
+use sqlx::{postgres::PgPool, Error};
 
 use std::env;
 use std::thread;
@@ -20,13 +23,15 @@ use std::time::Duration as StdDuration;
 // Import functions for each route
 use routes::auth::{login_user, register_user};
 use routes::boxe::get_all_boxes;
+use routes::clients::{
+    add_client, delete_client, get_all_clients, get_order, update_client, update_order,
+};
 use routes::index::{hello, helloworld};
-use routes::clients::{get_all_clients, add_client, update_client, delete_client, get_order, update_order};
-use routes::items::{get_item, get_items, create_item};
+use routes::items::{create_item, get_item, get_items};
 use routes::tours::{
     get_all_client_by_tour, get_all_not_delivered, get_all_tours, get_all_tours_day,
-    get_tour_by_id, get_tours_by_delivery_day, get_tours_date, get_tours_deliverer_day,
-    get_tours_today, set_deliverer,get_tour_for_deliverer,get_quantity_left
+    get_quantity_left, get_tour_by_id, get_tour_for_deliverer, get_tours_by_delivery_day,
+    get_tours_date, get_tours_deliverer_day, get_tours_today, set_deliverer,
 };
 use routes::users::{get_all_users, get_user, revoke_user, set_admin, verify_user};
 
@@ -57,14 +62,17 @@ async fn init_db_pool() -> Result<PgPool, Error> {
     PgPool::connect(&database_url).await
 }
 
-async fn create_tour_day(db_pool: &PgPool) -> Result<(), sqlx::Error > {
-    // Get the current date 
+async fn create_tour_day(db_pool: &PgPool) -> Result<(), sqlx::Error> {
+    // Get the current date
 
     println!("Creating tour day");
     let current_date = Utc::now();
     let new_date = current_date + Duration::days(3);
-    if new_date.weekday().number_from_monday() >5 {
-        return Err(SqlxError::Io(*Box::new(std::io::Error::new(std::io::ErrorKind::Other, "Weekend: no tour day created"))));
+    if new_date.weekday().number_from_monday() > 5 {
+        return Err(SqlxError::Io(*Box::new(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "Weekend: no tour day created",
+        ))));
     }
     let formatted_date =
         chrono::NaiveDate::parse_from_str(&new_date.format("%Y-%m-%d").to_string(), "%Y-%m-%d")
@@ -90,7 +98,9 @@ async fn run_daily_automation(app_state: AppState) {
             let duration_until_next_day = next_day.signed_duration_since(now);
 
             let create_run = create_tour_day(&db_pool).await;
-            thread::sleep(StdDuration::from_secs(duration_until_next_day.num_seconds() as u64));
+            thread::sleep(StdDuration::from_secs(
+                duration_until_next_day.num_seconds() as u64,
+            ));
 
             // Pass db_pool as an argument to create_tour_day
             match create_run {
@@ -147,50 +157,6 @@ async fn main() -> std::io::Result<()> {
         ClientService::new(client_repo.clone(), boxe_repo.clone(), order_repo.clone());
     // Start the Actix server
     HttpServer::new(move || {
-        let user_route = actix_web::web::scope("/users")
-            .service(get_user)
-            .service(get_all_users)
-            .service(verify_user)
-            .service(revoke_user)
-            .service(set_admin);
-
-        let client_route = actix_web::web::scope("/clients")
-            .service(get_all_clients)
-            .service(add_client)
-            .service(update_client)
-            .service(delete_client)
-            .service(get_order)
-            .service(update_order)
-            .service(get_all_boxes_client_tour);
-        let item_route = actix_web::web::scope("/items")
-            .service(get_item)
-            .service(get_items)
-            .service(create_item);
-        let tour_route = actix_web::web::scope("/tours")
-            .service(get_tour_for_deliverer)
-            .service(get_quantity_left)
-            .service(get_all_client_by_tour)
-            .service(get_all_tours_day)
-            .service(get_tours_date)
-            .service(get_tours_by_delivery_day)
-            .service(get_all_tours)
-            .service(get_tours_today)
-            .service(get_all_not_delivered)
-            .service(get_tours_deliverer_day)
-            .service(set_deliverer)
-            .service(get_tour_by_id);
-        let boxe_route = actix_web::web::scope("/boxes")
-            .service(get_all_boxes)
-            .service(get_tours_deliverer_day);
-        let auth_route = actix_web::web::scope("/auth")
-            .service(login_user)
-            .service(register_user);
-
-        //index in last because empty route path
-        let index_route = actix_web::web::scope("").service(helloworld).service(hello);
-
-        //test all the workflow
-
         App::new()
             .wrap(Cors::default().allow_any_origin().send_wildcard())
             .app_data(web::Data::new(app_state.clone()))
@@ -200,13 +166,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(tours_service.clone()))
             .app_data(web::Data::new(boxe_service.clone())) // Add ItemService to application data
             .app_data(web::Data::new(client_service.clone()))
-            .service(item_route)
-            .service(user_route)
-            .service(auth_route)
-            .service(tour_route)
-            .service(boxe_route)
-            .service(client_route)
-            .service(index_route)
+            .configure(configure_routes)
     })
     //4125 idk why but 8080 dont work
     .bind(("0.0.0.0", port))?

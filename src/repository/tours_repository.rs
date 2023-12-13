@@ -1,6 +1,6 @@
+use crate::models::quantity_left_model::QuantityLeftModel;
 use crate::models::tours::Tours;
 use crate::models::tours_day::ToursDay;
-use crate::models::quantity_left_model::QuantityLeftModel;
 use actix_web::web;
 use chrono::NaiveDate;
 use sqlx::Error;
@@ -124,7 +124,10 @@ impl ToursRepository {
         Ok(tours)
     }
 
-    pub async fn get_tours_for_deliverer (&self, deliverer_id: i32) -> Result<Option<ToursDay>, Error> {
+    pub async fn get_tours_for_deliverer(
+        &self,
+        deliverer_id: i32,
+    ) -> Result<Option<ToursDay>, Error> {
         let current_date: chrono::prelude::NaiveDate = chrono::Local::now().naive_local().date();
         let tour = sqlx::query_as!(
             ToursDay,
@@ -132,15 +135,17 @@ impl ToursRepository {
             deliverer_id,
             current_date
         )
-            .fetch_optional(&self.app_state.db_pool)
-            .await?;
-
-
+        .fetch_optional(&self.app_state.db_pool)
+        .await?;
 
         Ok(tour)
     }
 
-    pub async fn get_quatity_left(&self, date: String,tour : i32) -> Result<Vec<QuantityLeftModel>, Error> {
+    pub async fn get_quatity_left(
+        &self,
+        date: String,
+        tour: i32,
+    ) -> Result<Vec<QuantityLeftModel>, Error> {
         let date_parse = NaiveDate::parse_from_str(&date, "%Y-%m-%d").unwrap();
         let quantity_left = sqlx::query_as!(
             QuantityLeftModel,
@@ -154,8 +159,8 @@ impl ToursRepository {
             date_parse,
             tour
         )
-            .fetch_all(&self.app_state.db_pool)
-            .await?;
+        .fetch_all(&self.app_state.db_pool)
+        .await?;
         println!("quantity_left: {:?}", quantity_left);
         Ok(quantity_left)
     }
