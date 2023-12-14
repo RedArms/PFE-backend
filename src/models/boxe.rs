@@ -12,6 +12,7 @@ pub struct Boxe {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Boxe_DTO {
     pub order_id: i32,
+    pub item_id: i32,
     pub name: String,
     pub size: Option<String>,
     pub delivered_qty: i32,
@@ -39,6 +40,7 @@ impl Boxe {
 impl Boxe_DTO {
     pub fn new(
         order_id: i32,
+        item_id: i32,
         name: String,
         size: Option<String>,
         delivered_qty: i32,
@@ -47,6 +49,7 @@ impl Boxe_DTO {
     ) -> Self {
         Boxe_DTO {
             order_id,
+            item_id,
             name,
             size,
             delivered_qty,
