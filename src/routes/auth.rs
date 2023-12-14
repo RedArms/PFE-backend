@@ -8,6 +8,14 @@ struct LoginRequest {
     password: String,
 }
 
+pub fn configure_routes(cfg: &mut web::ServiceConfig) {
+    let auth_route = web::scope("/auth")
+        .service(login_user)
+        .service(register_user);
+
+    cfg.service(auth_route);
+}
+
 /*
     Login route
     POST /login

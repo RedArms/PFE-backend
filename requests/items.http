@@ -1,0 +1,20 @@
+
+@base_url = http://localhost:4125
+
+### recupere tous les items
+GET {{base_url}}/items/1
+
+### recupere tous les items
+GET {{base_url}}/items/
+
+### ajoute un item avec une taille
+POST {{base_url}}/items/
+{
+    "label": "Item 1",
+    "size": "XL"
+}
+### ajoute un item sans taille
+POST {{base_url}}/items/
+{
+    "label": "Item 1"
+}
