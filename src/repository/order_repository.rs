@@ -12,6 +12,18 @@ impl OrderRepository {
         Self { app_state }
     }
 
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Order>, Error> {
+        let order = sqlx::query_as!(
+            Order,
+            "SELECT order_id,client,tour,date,CAST(status AS TEXT) as status FROM pfe.orders WHERE order_id = $1",
+            id
+        )
+        .fetch_optional(&self.app_state.db_pool)
+        .await?;
+
+        Ok(order)
+    }
+
     pub async fn get_orders_from_date_and_tour(
         &self,
         date: String,
