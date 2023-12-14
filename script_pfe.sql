@@ -213,3 +213,6 @@ END;
 $$;
 call create_tour_day('2023-12-12');
 call create_tour_day('2023-12-13');
+call create_tour_day('2023-12-14');
+call create_tour_day('2023-12-15');
+call create_tour_day('2023-12-16');
