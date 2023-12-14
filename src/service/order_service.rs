@@ -24,4 +24,8 @@ impl OrderService {
     pub async fn set_delivered(&self, id: i32) -> Result<(), Error> {
         self.order_repo.set_delivered(id).await
     }
+
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Order>, Error> {
+        self.order_repo.get_by_id(id).await
+    }
 }
