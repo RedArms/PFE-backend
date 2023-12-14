@@ -47,3 +47,6 @@ GET http://localhost:4125/tours/getTourForDeliverer/4
 
 ###request 13
 GET http://localhost:4125/tours/getQuantityLeft/2023-12-15/2
+
+###request 14
+GET http://localhost:4125/tours/getTourDay/2023-12-14
