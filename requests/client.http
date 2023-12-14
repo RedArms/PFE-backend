@@ -1,0 +1,4 @@
+@base_url = http://localhost:4125
+
+### recupere tous les items
+GET {{base_url}}/clients/getAllBoxes/5/2/2023-12-14

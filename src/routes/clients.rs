@@ -126,6 +126,7 @@ pub async fn get_all_boxes_client_tour(
         let item_info = item_service.get_item(boxe.item).await.unwrap().unwrap();
         result.push(Boxe_DTO {
             order_id: boxe.order_id,
+            item_id: boxe.item,
             name: item_info.label,
             size: item_info.size,
             delivered_qty: boxe.delivered_qty,
